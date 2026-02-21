@@ -1,13 +1,13 @@
-import { AppSidebar } from "./AppSidebar";
+import { ClientSidebar } from "./ClientSidebar";
 
-interface AppLayoutProps {
+interface ClientLayoutProps {
   children: React.ReactNode;
 }
 
-export function AppLayout({ children }: AppLayoutProps) {
+export function ClientLayout({ children }: ClientLayoutProps) {
   return (
     <div className="flex min-h-screen w-full bg-background">
-      <AppSidebar />
+      <ClientSidebar />
       <main className="flex-1 min-w-0 overflow-auto">
         {children}
       </main>
