@@ -14,16 +14,214 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      clients: {
+        Row: {
+          billing_status: string | null
+          channels: string[] | null
+          color: string
+          contact_email: string | null
+          created_at: string | null
+          follower_growth: string | null
+          id: string
+          initials: string
+          joined: string | null
+          linkedin_followers: number | null
+          name: string
+          next_billing: string | null
+          plan: string | null
+        }
+        Insert: {
+          billing_status?: string | null
+          channels?: string[] | null
+          color: string
+          contact_email?: string | null
+          created_at?: string | null
+          follower_growth?: string | null
+          id: string
+          initials: string
+          joined?: string | null
+          linkedin_followers?: number | null
+          name: string
+          next_billing?: string | null
+          plan?: string | null
+        }
+        Update: {
+          billing_status?: string | null
+          channels?: string[] | null
+          color?: string
+          contact_email?: string | null
+          created_at?: string | null
+          follower_growth?: string | null
+          id?: string
+          initials?: string
+          joined?: string | null
+          linkedin_followers?: number | null
+          name?: string
+          next_billing?: string | null
+          plan?: string | null
+        }
+        Relationships: []
+      }
+      ideas: {
+        Row: {
+          angle: string | null
+          channel: string[] | null
+          client_id: string
+          created_at: string | null
+          hook: string
+          id: string
+          relevance: number | null
+          status: string | null
+        }
+        Insert: {
+          angle?: string | null
+          channel?: string[] | null
+          client_id: string
+          created_at?: string | null
+          hook: string
+          id?: string
+          relevance?: number | null
+          status?: string | null
+        }
+        Update: {
+          angle?: string | null
+          channel?: string[] | null
+          client_id?: string
+          created_at?: string | null
+          hook?: string
+          id?: string
+          relevance?: number | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ideas_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      posts: {
+        Row: {
+          assigned_to: string | null
+          body: string | null
+          channel: string
+          client_change_request: string | null
+          client_id: string
+          created_at: string | null
+          due_date: string | null
+          hook: string
+          id: string
+          scheduled_date: string | null
+          scheduled_time: string | null
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          assigned_to?: string | null
+          body?: string | null
+          channel: string
+          client_change_request?: string | null
+          client_id: string
+          created_at?: string | null
+          due_date?: string | null
+          hook: string
+          id?: string
+          scheduled_date?: string | null
+          scheduled_time?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          assigned_to?: string | null
+          body?: string | null
+          channel?: string
+          client_change_request?: string | null
+          client_id?: string
+          created_at?: string | null
+          due_date?: string | null
+          hook?: string
+          id?: string
+          scheduled_date?: string | null
+          scheduled_time?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "posts_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_profiles: {
+        Row: {
+          client_id: string | null
+          created_at: string | null
+          id: string
+          name: string | null
+        }
+        Insert: {
+          client_id?: string | null
+          created_at?: string | null
+          id: string
+          name?: string | null
+        }
+        Update: {
+          client_id?: string | null
+          created_at?: string | null
+          id?: string
+          name?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_profiles_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_user_client_id: { Args: { _user_id: string }; Returns: string }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "staff" | "client"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +348,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "staff", "client"],
+    },
   },
 } as const
