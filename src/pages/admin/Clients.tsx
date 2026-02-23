@@ -1,14 +1,17 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Plus, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { ClientAvatar } from "@/components/shared/ClientAvatar";
 import { BillingBadge } from "@/components/shared/BillingBadge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { BrandProfileForm } from "@/components/admin/BrandProfileForm";
+import { AddClientForm } from "@/components/admin/AddClientForm";
 
 export default function AdminClientsPage() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [adding, setAdding] = useState(false);
 
   const { data: clients = [] } = useQuery({
     queryKey: ["admin-clients"],
@@ -30,6 +33,15 @@ export default function AdminClientsPage() {
   const clientPosts = posts.filter((p: any) => p.client_id === selectedId);
   const pendingCount = clientPosts.filter((p: any) => p.status === "pending").length;
 
+  const handleAddClick = () => {
+    setAdding(true);
+    setSelectedId(null);
+  };
+
+  const handleAddDone = () => {
+    setAdding(false);
+  };
+
   return (
     <div className="flex h-screen">
       {/* Client list */}
@@ -37,7 +49,7 @@ export default function AdminClientsPage() {
         <div className="p-4 border-b" style={{ borderColor: "#1F2D45" }}>
           <div className="flex items-center justify-between mb-2">
             <h2 className="text-sm font-semibold">Clients ({clients.length})</h2>
-            <Button size="sm" variant="outline" className="h-7 text-xs border-slate-700 text-slate-300">
+            <Button size="sm" variant="outline" className="h-7 text-xs border-slate-700 text-slate-300" onClick={handleAddClick}>
               <Plus className="h-3 w-3 mr-1" /> Add
             </Button>
           </div>
@@ -46,7 +58,7 @@ export default function AdminClientsPage() {
           {clients.map((c: any) => (
             <button
               key={c.id}
-              onClick={() => setSelectedId(c.id)}
+              onClick={() => { setSelectedId(c.id); setAdding(false); }}
               className={`w-full text-left px-4 py-3 border-b transition-colors ${
                 c.id === selectedId
                   ? "border-l-2 border-l-blue-500"
@@ -68,9 +80,11 @@ export default function AdminClientsPage() {
         </div>
       </div>
 
-      {/* Client detail */}
+      {/* Detail panel */}
       <div className="flex-1 overflow-y-auto">
-        {selected ? (
+        {adding ? (
+          <AddClientForm onDone={handleAddDone} />
+        ) : selected ? (
           <div className="p-6 space-y-6">
             <div className="flex items-center gap-4">
               <ClientAvatar initials={selected.initials} color={selected.color} size="lg" />
@@ -91,54 +105,71 @@ export default function AdminClientsPage() {
               </div>
             </div>
 
-            {/* Stats */}
-            <div className="grid grid-cols-4 gap-4">
-              {[
-                { label: "Plan", value: selected.plan === "active" ? "$1,500/mo" : "Trial" },
-                { label: "Posts This Month", value: clientPosts.length },
-                { label: "Pending Approval", value: pendingCount },
-                { label: "LinkedIn Followers", value: `${selected.linkedin_followers} (${selected.follower_growth})` },
-              ].map((s) => (
-                <div key={s.label} className="rounded-lg p-3" style={{ background: "#111827", border: "1px solid #1F2D45" }}>
-                  <p className="text-xs" style={{ color: "#64748B" }}>{s.label}</p>
-                  <p className="text-lg font-bold mt-1">{s.value}</p>
-                </div>
-              ))}
-            </div>
+            <Tabs defaultValue="settings">
+              <TabsList className="bg-transparent border-b rounded-none w-full justify-start gap-0 h-auto p-0" style={{ borderColor: "#1F2D45" }}>
+                <TabsTrigger value="settings" className="rounded-none border-b-2 border-transparent data-[state=active]:border-blue-500 data-[state=active]:bg-transparent data-[state=active]:shadow-none px-4 py-2 text-sm">
+                  Settings
+                </TabsTrigger>
+                <TabsTrigger value="brand" className="rounded-none border-b-2 border-transparent data-[state=active]:border-blue-500 data-[state=active]:bg-transparent data-[state=active]:shadow-none px-4 py-2 text-sm">
+                  Brand Profile
+                </TabsTrigger>
+              </TabsList>
 
-            {/* Settings */}
-            <div className="rounded-lg overflow-hidden" style={{ background: "#111827", border: "1px solid #1F2D45" }}>
-              <div className="p-4 border-b" style={{ borderColor: "#1F2D45" }}>
-                <h3 className="text-sm font-semibold">Settings</h3>
-              </div>
-              <table className="w-full text-sm">
-                <tbody>
+              <TabsContent value="settings" className="mt-4 space-y-6">
+                {/* Stats */}
+                <div className="grid grid-cols-4 gap-4">
                   {[
-                    { label: "Contact Email", value: selected.contact_email },
-                    { label: "Active Channels", value: (selected.channels as string[] | null)?.join(", ") ?? "—" },
-                    { label: "Client Login URL", value: `app.phlo.com.au/${selected.id}` },
-                    { label: "Next Billing Date", value: selected.next_billing ?? "—" },
-                  ].map((row) => (
-                    <tr key={row.label} style={{ borderBottom: "1px solid #1F2D45" }}>
-                      <td className="px-4 py-3 text-xs font-medium" style={{ color: "#64748B", width: "180px" }}>{row.label}</td>
-                      <td className="px-4 py-3">{row.value}</td>
-                      <td className="px-4 py-3 text-right">
-                        <button className="text-xs text-blue-400 hover:text-blue-300">Edit</button>
-                      </td>
-                    </tr>
+                    { label: "Plan", value: selected.plan === "active" ? "$1,500/mo" : "Trial" },
+                    { label: "Posts This Month", value: clientPosts.length },
+                    { label: "Pending Approval", value: pendingCount },
+                    { label: "LinkedIn Followers", value: `${selected.linkedin_followers} (${selected.follower_growth})` },
+                  ].map((s) => (
+                    <div key={s.label} className="rounded-lg p-3" style={{ background: "#111827", border: "1px solid #1F2D45" }}>
+                      <p className="text-xs" style={{ color: "#64748B" }}>{s.label}</p>
+                      <p className="text-lg font-bold mt-1">{s.value}</p>
+                    </div>
                   ))}
-                </tbody>
-              </table>
-            </div>
+                </div>
 
-            <div className="flex gap-3">
-              <Button variant="outline" size="sm" className="border-slate-700 text-slate-300">
-                Send Approval Reminder
-              </Button>
-              <Button variant="outline" size="sm" className="border-slate-700 text-slate-300">
-                Generate Monthly Report
-              </Button>
-            </div>
+                {/* Settings table */}
+                <div className="rounded-lg overflow-hidden" style={{ background: "#111827", border: "1px solid #1F2D45" }}>
+                  <div className="p-4 border-b" style={{ borderColor: "#1F2D45" }}>
+                    <h3 className="text-sm font-semibold">Settings</h3>
+                  </div>
+                  <table className="w-full text-sm">
+                    <tbody>
+                      {[
+                        { label: "Contact Email", value: selected.contact_email },
+                        { label: "Active Channels", value: (selected.channels as string[] | null)?.join(", ") ?? "—" },
+                        { label: "Client Login URL", value: `app.phlo.com.au/${selected.id}` },
+                        { label: "Next Billing Date", value: selected.next_billing ?? "—" },
+                      ].map((row) => (
+                        <tr key={row.label} style={{ borderBottom: "1px solid #1F2D45" }}>
+                          <td className="px-4 py-3 text-xs font-medium" style={{ color: "#64748B", width: "180px" }}>{row.label}</td>
+                          <td className="px-4 py-3">{row.value}</td>
+                          <td className="px-4 py-3 text-right">
+                            <button className="text-xs text-blue-400 hover:text-blue-300">Edit</button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                <div className="flex gap-3">
+                  <Button variant="outline" size="sm" className="border-slate-700 text-slate-300">
+                    Send Approval Reminder
+                  </Button>
+                  <Button variant="outline" size="sm" className="border-slate-700 text-slate-300">
+                    Generate Monthly Report
+                  </Button>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="brand" className="mt-4">
+                <BrandProfileForm clientId={selected.id} clientName={selected.name} />
+              </TabsContent>
+            </Tabs>
           </div>
         ) : (
           <div className="flex-1 flex items-center justify-center h-full" style={{ color: "#64748B" }}>
