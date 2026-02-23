@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { ThumbsUp, MessageSquare, Repeat2, Send } from "lucide-react";
 
 interface LinkedInPreviewProps {
   post: any;
@@ -69,16 +70,16 @@ export function LinkedInPreview({ post, clientSlug }: LinkedInPreviewProps) {
       {/* Action buttons */}
       <div className="flex items-center justify-around py-1 px-2">
         {[
-          { icon: "👍", label: "Like" },
-          { icon: "💬", label: "Comment" },
-          { icon: "🔄", label: "Repost" },
-          { icon: "📤", label: "Send" },
+          { icon: ThumbsUp, label: "Like" },
+          { icon: MessageSquare, label: "Comment" },
+          { icon: Repeat2, label: "Repost" },
+          { icon: Send, label: "Send" },
         ].map((action) => (
           <button
             key={action.label}
             className="flex flex-col items-center gap-0.5 px-4 py-2 rounded hover:bg-[#00000008] transition-colors"
           >
-            <span className="text-lg">{action.icon}</span>
+            <action.icon className="h-4 w-4 text-[#00000099]" />
             <span className="text-[11px] font-medium text-[#00000099]">{action.label}</span>
           </button>
         ))}
