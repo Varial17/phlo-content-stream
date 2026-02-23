@@ -4,9 +4,10 @@ import { ThumbsUp, MessageSquare, Repeat2, Send } from "lucide-react";
 interface LinkedInPreviewProps {
   post: any;
   clientSlug?: string;
+  avatarUrl?: string | null;
 }
 
-export function LinkedInPreview({ post, clientSlug }: LinkedInPreviewProps) {
+export function LinkedInPreview({ post, clientSlug, avatarUrl }: LinkedInPreviewProps) {
   const [expanded, setExpanded] = useState(false);
   const [isClamped, setIsClamped] = useState(false);
   const bodyRef = useRef<HTMLDivElement>(null);
@@ -26,9 +27,13 @@ export function LinkedInPreview({ post, clientSlug }: LinkedInPreviewProps) {
     <div className="rounded-lg border bg-white overflow-hidden" style={{ fontFamily: "system-ui, -apple-system, sans-serif" }}>
       {/* Header */}
       <div className="flex items-center gap-2 px-4 pt-3 pb-1">
-        <div className="h-12 w-12 rounded-full bg-[#1a1a1a] flex items-center justify-center text-sm font-bold text-white shrink-0">
-          {clientSlug?.slice(0, 2).toUpperCase()}
-        </div>
+        {avatarUrl ? (
+          <img src={avatarUrl} alt={clientSlug || ""} className="h-12 w-12 rounded-full object-cover shrink-0" />
+        ) : (
+          <div className="h-12 w-12 rounded-full bg-[#1a1a1a] flex items-center justify-center text-sm font-bold text-white shrink-0">
+            {clientSlug?.slice(0, 2).toUpperCase()}
+          </div>
+        )}
         <div className="min-w-0 flex-1">
           <p className="text-sm font-semibold text-[#000000E6] leading-tight">{clientSlug}</p>
           <p className="text-xs text-[#00000099] leading-tight mt-0.5">1h · <span>🌐</span></p>

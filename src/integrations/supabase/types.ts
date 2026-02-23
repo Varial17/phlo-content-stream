@@ -140,6 +140,7 @@ export type Database = {
       }
       clients: {
         Row: {
+          avatar_url: string | null
           billing_status: string | null
           channels: string[] | null
           color: string
@@ -155,6 +156,7 @@ export type Database = {
           plan: string | null
         }
         Insert: {
+          avatar_url?: string | null
           billing_status?: string | null
           channels?: string[] | null
           color: string
@@ -170,6 +172,7 @@ export type Database = {
           plan?: string | null
         }
         Update: {
+          avatar_url?: string | null
           billing_status?: string | null
           channels?: string[] | null
           color?: string
