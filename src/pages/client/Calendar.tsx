@@ -14,6 +14,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { NewPostDialog } from "@/components/shared/NewPostDialog";
 import {
   format,
   startOfMonth,
@@ -36,6 +37,7 @@ export default function ClientCalendarPage() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [showChangeRequest, setShowChangeRequest] = useState(false);
   const [changeRequest, setChangeRequest] = useState("");
+  const [newPostOpen, setNewPostOpen] = useState(false);
 
   const monthStart = startOfMonth(currentDate);
   const monthEnd = endOfMonth(currentDate);
@@ -157,7 +159,7 @@ export default function ClientCalendarPage() {
             <Button variant="outline" size="sm" onClick={() => setCurrentDate(new Date())}>Today</Button>
           </div>
 
-          <Button size="sm" className="bg-primary text-primary-foreground">
+          <Button size="sm" className="bg-primary text-primary-foreground" onClick={() => setNewPostOpen(true)}>
             <Plus className="h-3.5 w-3.5 mr-1" />
             New Post
           </Button>
@@ -346,6 +348,8 @@ export default function ClientCalendarPage() {
           )}
         </SheetContent>
       </Sheet>
+
+      <NewPostDialog open={newPostOpen} onOpenChange={setNewPostOpen} fixedClientId={clientSlug} />
     </div>
   );
 }
