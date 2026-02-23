@@ -254,9 +254,52 @@ export default function ClientCalendarPage() {
 
           {selectedPost && (
             <div className="mt-6 space-y-6">
-              <div className="bg-muted/50 rounded-lg p-4 text-sm text-foreground whitespace-pre-wrap leading-relaxed">
-                {selectedPost.body || "No content yet."}
-              </div>
+              {/* LinkedIn-style preview */}
+              {selectedPost.channel === "linkedin" ? (
+                <div className="rounded-lg border bg-card overflow-hidden">
+                  {/* LinkedIn header */}
+                  <div className="flex items-center gap-2.5 p-3">
+                    <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center text-xs font-semibold text-muted-foreground">
+                      {clientSlug?.slice(0, 2).toUpperCase()}
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-foreground">{clientSlug}</p>
+                      <p className="text-[11px] text-muted-foreground">1h · 🌐</p>
+                    </div>
+                  </div>
+                  {/* Post body */}
+                  <div className="px-3 pb-2 text-sm text-foreground whitespace-pre-wrap leading-relaxed">
+                    {selectedPost.body || "No content yet."}
+                  </div>
+                  {/* Image */}
+                  {selectedPost.image_url && (
+                    <img
+                      src={selectedPost.image_url}
+                      alt="Post image"
+                      className="w-full object-cover max-h-[280px]"
+                    />
+                  )}
+                  {/* LinkedIn actions bar */}
+                  <div className="flex items-center justify-around border-t py-2 px-3">
+                    {["👍 Like", "💬 Comment", "🔄 Repost", "📤 Send"].map((action) => (
+                      <span key={action} className="text-xs text-muted-foreground font-medium">{action}</span>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <div className="bg-muted/50 rounded-lg p-4 text-sm text-foreground whitespace-pre-wrap leading-relaxed">
+                    {selectedPost.body || "No content yet."}
+                  </div>
+                  {selectedPost.image_url && (
+                    <img
+                      src={selectedPost.image_url}
+                      alt="Post image"
+                      className="w-full rounded-lg object-cover max-h-[280px]"
+                    />
+                  )}
+                </>
+              )}
 
               <div className="flex items-center gap-4 text-sm text-muted-foreground">
                 <span>📅 {selectedPost.scheduled_date}</span>
