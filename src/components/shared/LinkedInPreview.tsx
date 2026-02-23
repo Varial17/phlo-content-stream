@@ -25,12 +25,12 @@ export function LinkedInPreview({ post, clientSlug }: LinkedInPreviewProps) {
     <div className="rounded-lg border bg-white overflow-hidden" style={{ fontFamily: "system-ui, -apple-system, sans-serif" }}>
       {/* Header */}
       <div className="flex items-center gap-2 px-4 pt-3 pb-1">
-        <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center text-sm font-bold text-muted-foreground shrink-0">
+        <div className="h-12 w-12 rounded-full bg-[#1a1a1a] flex items-center justify-center text-sm font-bold text-white shrink-0">
           {clientSlug?.slice(0, 2).toUpperCase()}
         </div>
         <div className="min-w-0 flex-1">
           <p className="text-sm font-semibold text-[#000000E6] leading-tight">{clientSlug}</p>
-          <p className="text-xs text-[#00000099] leading-tight mt-0.5">1h • <span>🌐</span></p>
+          <p className="text-xs text-[#00000099] leading-tight mt-0.5">1h · <span>🌐</span></p>
         </div>
       </div>
 
@@ -43,12 +43,14 @@ export function LinkedInPreview({ post, clientSlug }: LinkedInPreviewProps) {
           {post.body || "No content yet."}
         </div>
         {isClamped && !expanded && (
-          <button
-            onClick={() => setExpanded(true)}
-            className="text-sm text-[#00000099] hover:text-[#0a66c2] hover:underline mt-0.5"
-          >
-            …more
-          </button>
+          <div className="flex justify-end">
+            <button
+              onClick={() => setExpanded(true)}
+              className="text-sm text-[#00000099] hover:text-[#0a66c2] hover:underline"
+            >
+              …more
+            </button>
+          </div>
         )}
       </div>
 
@@ -57,25 +59,12 @@ export function LinkedInPreview({ post, clientSlug }: LinkedInPreviewProps) {
         <img
           src={post.image_url}
           alt="Post image"
-          className="w-full object-cover max-h-[350px] mt-2"
+          className="w-full object-cover mt-2"
         />
       )}
 
-      {/* Reactions row */}
-      <div className="flex items-center justify-between px-4 py-1.5 text-xs text-[#00000099]">
-        <div className="flex items-center gap-0.5">
-          <span className="text-sm">👍❤️😂</span>
-          <span className="ml-1">25</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <span>23 comments</span>
-          <span>•</span>
-          <span>3 reposts</span>
-        </div>
-      </div>
-
       {/* Divider */}
-      <div className="mx-4 border-t border-[#0000001a]" />
+      <div className="mx-4 mt-1 border-t border-[#e0e0e0]" />
 
       {/* Action buttons */}
       <div className="flex items-center justify-around py-1 px-2">
@@ -87,10 +76,10 @@ export function LinkedInPreview({ post, clientSlug }: LinkedInPreviewProps) {
         ].map((action) => (
           <button
             key={action.label}
-            className="flex items-center gap-1.5 px-3 py-2.5 rounded hover:bg-[#00000008] transition-colors"
+            className="flex flex-col items-center gap-0.5 px-4 py-2 rounded hover:bg-[#00000008] transition-colors"
           >
-            <span className="text-base">{action.icon}</span>
-            <span className="text-xs font-semibold text-[#00000099]">{action.label}</span>
+            <span className="text-lg">{action.icon}</span>
+            <span className="text-[11px] font-medium text-[#00000099]">{action.label}</span>
           </button>
         ))}
       </div>
