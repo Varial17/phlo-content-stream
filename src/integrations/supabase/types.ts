@@ -14,6 +14,130 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_logs: {
+        Row: {
+          client_id: string | null
+          created_at: string | null
+          error_message: string | null
+          function_name: string | null
+          id: string
+          input_tokens: number | null
+          output_tokens: number | null
+          success: boolean | null
+        }
+        Insert: {
+          client_id?: string | null
+          created_at?: string | null
+          error_message?: string | null
+          function_name?: string | null
+          id?: string
+          input_tokens?: number | null
+          output_tokens?: number | null
+          success?: boolean | null
+        }
+        Update: {
+          client_id?: string | null
+          created_at?: string | null
+          error_message?: string | null
+          function_name?: string | null
+          id?: string
+          input_tokens?: number | null
+          output_tokens?: number | null
+          success?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_logs_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      brand_profiles: {
+        Row: {
+          business_description: string | null
+          client_id: string
+          competitors: string[] | null
+          content_pillars: string[] | null
+          cta_style: string | null
+          id: string
+          industry: string | null
+          location: string | null
+          post_length_linkedin: string | null
+          post_length_threads: string | null
+          services: string[] | null
+          target_audience: string | null
+          tone_of_voice: string | null
+          topics_to_avoid: string[] | null
+          updated_at: string | null
+          use_emojis: boolean | null
+          use_hashtags: boolean | null
+          website_url: string | null
+          words_to_avoid: string[] | null
+          words_to_use: string[] | null
+          writing_examples: string | null
+          writing_style_notes: string | null
+        }
+        Insert: {
+          business_description?: string | null
+          client_id: string
+          competitors?: string[] | null
+          content_pillars?: string[] | null
+          cta_style?: string | null
+          id?: string
+          industry?: string | null
+          location?: string | null
+          post_length_linkedin?: string | null
+          post_length_threads?: string | null
+          services?: string[] | null
+          target_audience?: string | null
+          tone_of_voice?: string | null
+          topics_to_avoid?: string[] | null
+          updated_at?: string | null
+          use_emojis?: boolean | null
+          use_hashtags?: boolean | null
+          website_url?: string | null
+          words_to_avoid?: string[] | null
+          words_to_use?: string[] | null
+          writing_examples?: string | null
+          writing_style_notes?: string | null
+        }
+        Update: {
+          business_description?: string | null
+          client_id?: string
+          competitors?: string[] | null
+          content_pillars?: string[] | null
+          cta_style?: string | null
+          id?: string
+          industry?: string | null
+          location?: string | null
+          post_length_linkedin?: string | null
+          post_length_threads?: string | null
+          services?: string[] | null
+          target_audience?: string | null
+          tone_of_voice?: string | null
+          topics_to_avoid?: string[] | null
+          updated_at?: string | null
+          use_emojis?: boolean | null
+          use_hashtags?: boolean | null
+          website_url?: string | null
+          words_to_avoid?: string[] | null
+          words_to_use?: string[] | null
+          writing_examples?: string | null
+          writing_style_notes?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "brand_profiles_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: true
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       clients: {
         Row: {
           billing_status: string | null
@@ -71,6 +195,8 @@ export type Database = {
           hook: string
           id: string
           relevance: number | null
+          source_summary: string | null
+          source_url: string | null
           status: string | null
         }
         Insert: {
@@ -81,6 +207,8 @@ export type Database = {
           hook: string
           id?: string
           relevance?: number | null
+          source_summary?: string | null
+          source_url?: string | null
           status?: string | null
         }
         Update: {
@@ -91,6 +219,8 @@ export type Database = {
           hook?: string
           id?: string
           relevance?: number | null
+          source_summary?: string | null
+          source_url?: string | null
           status?: string | null
         }
         Relationships: [
@@ -105,6 +235,7 @@ export type Database = {
       }
       posts: {
         Row: {
+          ai_generated: boolean | null
           assigned_to: string | null
           body: string | null
           channel: string
@@ -114,12 +245,14 @@ export type Database = {
           due_date: string | null
           hook: string
           id: string
+          idea_id: string | null
           scheduled_date: string | null
           scheduled_time: string | null
           status: string | null
           updated_at: string | null
         }
         Insert: {
+          ai_generated?: boolean | null
           assigned_to?: string | null
           body?: string | null
           channel: string
@@ -129,12 +262,14 @@ export type Database = {
           due_date?: string | null
           hook: string
           id?: string
+          idea_id?: string | null
           scheduled_date?: string | null
           scheduled_time?: string | null
           status?: string | null
           updated_at?: string | null
         }
         Update: {
+          ai_generated?: boolean | null
           assigned_to?: string | null
           body?: string | null
           channel?: string
@@ -144,6 +279,7 @@ export type Database = {
           due_date?: string | null
           hook?: string
           id?: string
+          idea_id?: string | null
           scheduled_date?: string | null
           scheduled_time?: string | null
           status?: string | null
@@ -155,6 +291,13 @@ export type Database = {
             columns: ["client_id"]
             isOneToOne: false
             referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "posts_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "ideas"
             referencedColumns: ["id"]
           },
         ]
