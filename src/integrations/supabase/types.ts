@@ -57,6 +57,7 @@ export type Database = {
       }
       brand_profiles: {
         Row: {
+          brand_colors: string[] | null
           business_description: string | null
           client_id: string
           competitors: string[] | null
@@ -81,6 +82,7 @@ export type Database = {
           writing_style_notes: string | null
         }
         Insert: {
+          brand_colors?: string[] | null
           business_description?: string | null
           client_id: string
           competitors?: string[] | null
@@ -105,6 +107,7 @@ export type Database = {
           writing_style_notes?: string | null
         }
         Update: {
+          brand_colors?: string[] | null
           business_description?: string | null
           client_id?: string
           competitors?: string[] | null
