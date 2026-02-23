@@ -17,6 +17,7 @@ import { AILoadingState } from "@/components/shared/AILoadingState";
 import { PostImageSection } from "@/components/admin/PostImageSection";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
+import { NewPostDialog } from "@/components/shared/NewPostDialog";
 
 const staffOptions = ["Anh Nguyen", "James Pham", "Unassigned"];
 
@@ -24,6 +25,7 @@ export default function AdminAllPostsPage() {
   const queryClient = useQueryClient();
   const [clientFilter, setClientFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [newPostOpen, setNewPostOpen] = useState(false);
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
   const [editHook, setEditHook] = useState("");
   const [editBody, setEditBody] = useState("");
@@ -139,7 +141,7 @@ export default function AdminAllPostsPage() {
               <h1 className="text-xl font-bold">All Posts</h1>
               <p className="text-xs" style={{ color: "#64748B" }}>Edit, assign, and push content to clients</p>
             </div>
-            <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white">
+            <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white" onClick={() => setNewPostOpen(true)}>
               <Plus className="h-3.5 w-3.5 mr-1" /> New Post
             </Button>
           </div>
@@ -286,6 +288,7 @@ export default function AdminAllPostsPage() {
           ) : null}
         </div>
       )}
+      <NewPostDialog open={newPostOpen} onOpenChange={setNewPostOpen} />
     </div>
   );
 }
