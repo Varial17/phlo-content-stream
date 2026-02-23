@@ -1,13 +1,68 @@
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useState, useRef } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Plus, ExternalLink } from "lucide-react";
+import { Plus, ExternalLink, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ClientAvatar } from "@/components/shared/ClientAvatar";
 import { BillingBadge } from "@/components/shared/BillingBadge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BrandProfileForm } from "@/components/admin/BrandProfileForm";
 import { AddClientForm } from "@/components/admin/AddClientForm";
+import { toast } from "sonner";
+
+function AvatarUpload({ client }: { client: any }) {
+  const fileRef = useRef<HTMLInputElement>(null);
+  const queryClient = useQueryClient();
+  const [uploading, setUploading] = useState(false);
+
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const ext = file.name.split(".").pop();
+      const path = `avatars/${client.id}.${ext}`;
+      const { error: uploadErr } = await supabase.storage
+        .from("post-images")
+        .upload(path, file, { upsert: true });
+      if (uploadErr) throw uploadErr;
+
+      const { data: urlData } = supabase.storage.from("post-images").getPublicUrl(path);
+      const avatarUrl = `${urlData.publicUrl}?t=${Date.now()}`;
+
+      const { error: updateErr } = await supabase
+        .from("clients")
+        .update({ avatar_url: avatarUrl })
+        .eq("id", client.id);
+      if (updateErr) throw updateErr;
+
+      queryClient.invalidateQueries({ queryKey: ["admin-clients"] });
+      toast.success("Profile picture updated!");
+    } catch (err: any) {
+      toast.error("Upload failed: " + err.message);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  return (
+    <div className="relative group cursor-pointer" onClick={() => fileRef.current?.click()}>
+      <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleUpload} />
+      {client.avatar_url ? (
+        <img src={client.avatar_url} alt={client.initials} className="h-10 w-10 rounded-lg object-cover" />
+      ) : (
+        <ClientAvatar initials={client.initials} color={client.color} size="lg" />
+      )}
+      <div className="absolute inset-0 bg-black/50 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+        {uploading ? (
+          <span className="text-[10px] text-white">…</span>
+        ) : (
+          <Upload className="h-4 w-4 text-white" />
+        )}
+      </div>
+    </div>
+  );
+}
 
 export default function AdminClientsPage() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -67,7 +122,7 @@ export default function AdminClientsPage() {
               style={{ borderBottomColor: "#1F2D45", background: c.id === selectedId ? "#1A2235" : "transparent" }}
             >
               <div className="flex items-center gap-2">
-                <ClientAvatar initials={c.initials} color={c.color} size="sm" />
+                <ClientAvatar initials={c.initials} color={c.color} avatarUrl={c.avatar_url} size="sm" />
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-medium truncate">{c.name}</p>
                   <div className="flex items-center gap-1">
@@ -87,7 +142,7 @@ export default function AdminClientsPage() {
         ) : selected ? (
           <div className="p-6 space-y-6">
             <div className="flex items-center gap-4">
-              <ClientAvatar initials={selected.initials} color={selected.color} size="lg" />
+              <AvatarUpload client={selected} />
               <div>
                 <h1 className="text-xl font-bold">{selected.name}</h1>
                 <p className="text-xs" style={{ color: "#64748B" }}>Joined {selected.joined}</p>

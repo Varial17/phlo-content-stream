@@ -40,6 +40,19 @@ export default function ClientCalendarPage() {
   const monthStart = startOfMonth(currentDate);
   const monthEnd = endOfMonth(currentDate);
 
+  const { data: client } = useQuery({
+    queryKey: ["client", clientSlug],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("clients")
+        .select("avatar_url")
+        .eq("id", clientSlug!)
+        .single();
+      return data;
+    },
+    enabled: !!clientSlug,
+  });
+
   const { data: posts = [] } = useQuery({
     queryKey: ["client-posts", clientSlug, format(currentDate, "yyyy-MM")],
     queryFn: async () => {
@@ -257,7 +270,7 @@ export default function ClientCalendarPage() {
             <div className="mt-6 space-y-6">
               {/* LinkedIn-style preview */}
               {selectedPost.channel === "linkedin" ? (
-                <LinkedInPreview post={selectedPost} clientSlug={clientSlug} />
+                <LinkedInPreview post={selectedPost} clientSlug={clientSlug} avatarUrl={client?.avatar_url} />
               ) : (
                 <>
                   <div className="bg-muted/50 rounded-lg p-4 text-sm text-foreground whitespace-pre-wrap leading-relaxed">
