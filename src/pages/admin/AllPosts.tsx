@@ -1,9 +1,14 @@
 import { useState, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Plus, AlertTriangle, Sparkles, X, Check } from "lucide-react";
+import { Plus, AlertTriangle, Sparkles, X, Check, CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { StatusPill } from "@/components/shared/StatusPill";
 import { ChannelPill } from "@/components/shared/ChannelPill";
 import { ClientAvatar } from "@/components/shared/ClientAvatar";
@@ -26,6 +31,8 @@ export default function AdminAllPostsPage() {
   const [polishing, setPolishing] = useState(false);
   const [polishedText, setPolishedText] = useState<string | null>(null);
   const [originalText, setOriginalText] = useState<string>("");
+  const [scheduledDate, setScheduledDate] = useState<Date | undefined>();
+  const [scheduledTime, setScheduledTime] = useState("09:00");
 
   const { data: clients = [] } = useQuery({
     queryKey: ["admin-clients"],
@@ -75,8 +82,20 @@ export default function AdminAllPostsPage() {
   });
 
   const pushMutation = useMutation({
-    mutationFn: async (postId: string) => { await supabase.from("posts").update({ status: "pending" }).eq("id", postId); },
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["admin-posts"] }); },
+    mutationFn: async (postId: string) => {
+      const updateData: any = { status: "pending" };
+      if (scheduledDate) {
+        updateData.scheduled_date = format(scheduledDate, "yyyy-MM-dd");
+        updateData.scheduled_time = scheduledTime;
+      }
+      await supabase.from("posts").update(updateData).eq("id", postId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-posts"] });
+      setScheduledDate(undefined);
+      setScheduledTime("09:00");
+      toast.success("Pushed to client for approval!");
+    },
   });
 
   const handlePolish = async () => {
@@ -235,9 +254,26 @@ export default function AdminAllPostsPage() {
               </div>
 
               {selectedPost.status === "draft" && (
-                <Button variant="outline" className="w-full border-emerald-500/50 text-emerald-400 hover:bg-emerald-500/10" onClick={() => pushMutation.mutate(selectedPost.id)}>
-                  → Push to Client for Approval
-                </Button>
+                <div className="space-y-3 rounded-lg p-3" style={{ background: "#0A0F1E", border: "1px solid #1F2D45" }}>
+                  <p className="text-xs font-medium" style={{ color: "#94A3B8" }}>Schedule for Client Calendar</p>
+                  <div className="flex gap-2">
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button variant="outline" className={cn("flex-1 justify-start text-left font-normal border-slate-700", !scheduledDate && "text-slate-500")}>
+                          <CalendarIcon className="mr-2 h-3.5 w-3.5" />
+                          {scheduledDate ? format(scheduledDate, "PPP") : "Pick a date"}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar mode="single" selected={scheduledDate} onSelect={setScheduledDate} initialFocus className={cn("p-3 pointer-events-auto")} />
+                      </PopoverContent>
+                    </Popover>
+                    <Input type="time" value={scheduledTime} onChange={(e) => setScheduledTime(e.target.value)} className="w-[110px] bg-transparent border-slate-700 text-white" />
+                  </div>
+                  <Button variant="outline" className="w-full border-emerald-500/50 text-emerald-400 hover:bg-emerald-500/10" onClick={() => pushMutation.mutate(selectedPost.id)} disabled={!scheduledDate || pushMutation.isPending}>
+                    → Push to Client for Approval
+                  </Button>
+                </div>
               )}
             </div>
           ) : null}
