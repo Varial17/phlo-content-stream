@@ -14,6 +14,7 @@ import { ChannelPill } from "@/components/shared/ChannelPill";
 import { ClientAvatar } from "@/components/shared/ClientAvatar";
 import { AIDiffViewer } from "@/components/shared/AIDiffViewer";
 import { AILoadingState } from "@/components/shared/AILoadingState";
+import { PostImageSection } from "@/components/admin/PostImageSection";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 
@@ -222,6 +223,12 @@ export default function AdminAllPostsPage() {
                   <SelectContent>{staffOptions.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
                 </Select>
               </div>
+
+              <PostImageSection
+                postId={selectedPost.id}
+                imageUrl={selectedPost.image_url ?? null}
+                onImageChange={() => queryClient.invalidateQueries({ queryKey: ["admin-posts"] })}
+              />
 
               <div className="space-y-1.5">
                 <label className="text-xs font-medium" style={{ color: "#94A3B8" }}>Hook / Subject Line</label>
