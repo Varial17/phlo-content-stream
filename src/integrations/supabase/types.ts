@@ -246,6 +246,7 @@ export type Database = {
           hook: string
           id: string
           idea_id: string | null
+          image_url: string | null
           scheduled_date: string | null
           scheduled_time: string | null
           status: string | null
@@ -263,6 +264,7 @@ export type Database = {
           hook: string
           id?: string
           idea_id?: string | null
+          image_url?: string | null
           scheduled_date?: string | null
           scheduled_time?: string | null
           status?: string | null
@@ -280,6 +282,7 @@ export type Database = {
           hook?: string
           id?: string
           idea_id?: string | null
+          image_url?: string | null
           scheduled_date?: string | null
           scheduled_time?: string | null
           status?: string | null
