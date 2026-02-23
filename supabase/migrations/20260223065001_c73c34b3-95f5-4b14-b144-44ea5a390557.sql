@@ -1,0 +1,1 @@
+ALTER TABLE public.brand_profiles ADD COLUMN brand_colors text[] NULL DEFAULT '{}'::text[];

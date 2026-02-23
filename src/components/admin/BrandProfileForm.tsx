@@ -8,7 +8,7 @@ import { Switch } from "@/components/ui/switch";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { TagInput } from "@/components/shared/TagInput";
-import { Check, Sparkles } from "lucide-react";
+import { Check, Sparkles, Plus, X } from "lucide-react";
 import { AILoadingState } from "@/components/shared/AILoadingState";
 import { toast } from "sonner";
 
@@ -55,6 +55,7 @@ export function BrandProfileForm({ clientId, clientName }: BrandProfileFormProps
     use_emojis: false,
     use_hashtags: false,
     cta_style: "none",
+    brand_colors: [] as string[],
   });
 
   useEffect(() => {
@@ -79,6 +80,7 @@ export function BrandProfileForm({ clientId, clientName }: BrandProfileFormProps
         use_emojis: profile.use_emojis ?? false,
         use_hashtags: profile.use_hashtags ?? false,
         cta_style: profile.cta_style ?? "none",
+        brand_colors: (profile.brand_colors as string[]) ?? [],
       });
     }
   }, [profile]);
@@ -158,6 +160,53 @@ export function BrandProfileForm({ clientId, clientName }: BrandProfileFormProps
             <label className={labelStyle} style={labelColor}>Location</label>
             <Input value={form.location} onChange={(e) => update("location", e.target.value)} className="bg-transparent border-slate-700 text-white" />
           </div>
+        </div>
+      </div>
+
+      {/* Section: Brand Colors */}
+      <div className={sectionStyle} style={sectionBg}>
+        <h3 className="text-sm font-semibold mb-3">Brand Colors</h3>
+        <p className="text-xs mb-3" style={labelColor}>Used for image generation prompts and UI theming.</p>
+        <div className="flex flex-wrap items-center gap-3">
+          {form.brand_colors.map((color, i) => (
+            <div key={i} className="relative group">
+              <label className="block cursor-pointer">
+                <input
+                  type="color"
+                  value={color}
+                  onChange={(e) => {
+                    const updated = [...form.brand_colors];
+                    updated[i] = e.target.value;
+                    update("brand_colors", updated);
+                  }}
+                  className="sr-only"
+                />
+                <div
+                  className="h-10 w-10 rounded-lg border border-slate-600 shadow-sm transition-transform hover:scale-105"
+                  style={{ backgroundColor: color }}
+                />
+              </label>
+              <button
+                onClick={() => {
+                  const updated = form.brand_colors.filter((_, idx) => idx !== i);
+                  update("brand_colors", updated);
+                }}
+                className="absolute -top-1.5 -right-1.5 h-4 w-4 rounded-full bg-red-500 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+              >
+                <X className="h-2.5 w-2.5 text-white" />
+              </button>
+              <p className="text-[10px] text-center mt-1 uppercase" style={labelColor}>{color}</p>
+            </div>
+          ))}
+          {/* Always show empty slots up to at least 2, plus the add button */}
+          {form.brand_colors.length < 8 && (
+            <button
+              onClick={() => update("brand_colors", [...form.brand_colors, "#3B82F6"])}
+              className="h-10 w-10 rounded-lg border border-dashed border-slate-600 flex items-center justify-center hover:border-slate-400 transition-colors"
+            >
+              <Plus className="h-4 w-4" style={labelColor} />
+            </button>
+          )}
         </div>
       </div>
 
