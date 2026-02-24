@@ -17,6 +17,7 @@ import AdminOverviewPage from "@/pages/admin/Overview";
 import AdminAllPostsPage from "@/pages/admin/AllPosts";
 import AdminClientsPage from "@/pages/admin/Clients";
 import AdminBillingPage from "@/pages/admin/Billing";
+import AdminEmailPreviewPage from "@/pages/admin/EmailPreview";
 
 import NotFound from "@/pages/NotFound";
 
@@ -55,6 +56,7 @@ const App = () => (
             <Route path="/admin/posts" element={<AuthGuard><AdminLayout><AdminAllPostsPage /></AdminLayout></AuthGuard>} />
             <Route path="/admin/clients" element={<AuthGuard><AdminLayout><AdminClientsPage /></AdminLayout></AuthGuard>} />
             <Route path="/admin/billing" element={<AuthGuard><AdminLayout><AdminBillingPage /></AdminLayout></AuthGuard>} />
+            <Route path="/admin/email-preview/:postId" element={<AuthGuard><AdminEmailPreviewPage /></AuthGuard>} />
 
             {/* Client portal routes */}
             <Route path="/:clientSlug" element={<AuthGuard><ClientLayout><ClientCalendarPage /></ClientLayout></AuthGuard>} />
