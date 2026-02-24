@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Plus, AlertTriangle, Sparkles, X, Check, CalendarIcon } from "lucide-react";
+import { Plus, AlertTriangle, Sparkles, X, Check, CalendarIcon, Mail } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -246,6 +246,15 @@ export default function AdminAllPostsPage() {
               </div>
 
               {polishing && <AILoadingState message={`Polishing in ${clientMap[selectedPost.client_id]?.name ?? "brand"}'s voice…`} />}
+
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full border-border text-muted-foreground hover:text-foreground"
+                onClick={() => window.open(`/admin/email-preview/${selectedPost.id}`, "_blank")}
+              >
+                <Mail className="h-3.5 w-3.5 mr-1" /> Email Preview
+              </Button>
 
               {polishedText ? (
                 <AIDiffViewer original={originalText} polished={polishedText} onAccept={handleAcceptPolish} onDiscard={() => setPolishedText(null)} />
