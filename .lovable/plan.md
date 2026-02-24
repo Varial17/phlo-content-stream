@@ -1,49 +1,54 @@
 
-# Upgrade Polish with AI to use Seven Sweeps Framework
 
-## What Changes
+# Email Preview Tool for Newsletter Posts
 
-The "Polish with AI" button on All Posts will use the full Seven Sweeps copyediting methodology instead of a simple "polish this" prompt. This produces significantly higher quality edits.
-
-## Model
-
-Since Claude Opus 4.6 is not available on the AI gateway, this plan uses **google/gemini-3-pro-preview** (the most capable available model) to handle the multi-pass reasoning the framework requires.
+## What This Does
+Adds an "Email Preview" button to newsletter/email posts that opens a new browser tab showing the post content rendered as a clean, email-ready HTML layout. You can then copy the raw HTML and paste it directly into Beehiiv or Kit's custom HTML block.
 
 ## How It Works
 
-The edge function `polish-post` will be updated with a detailed system prompt that instructs the AI to run all seven sweeps internally and return the final polished result:
+1. **New "Email Preview" button** appears in the post edit panel (right side of All Posts page) when viewing any post -- but especially useful for `email` channel posts.
 
-1. **Clarity** -- fix confusing structures, jargon, ambiguity
-2. **Voice and Tone** -- match brand voice consistently throughout
-3. **So What** -- ensure every claim answers "why should I care?"
-4. **Prove It** -- flag or soften unsubstantiated claims
-5. **Specificity** -- replace vague language with concrete details
-6. **Heightened Emotion** -- add authentic emotional texture
-7. **Zero Risk** -- smooth friction near any call-to-action
+2. **Clicking it opens a new route** (`/admin/email-preview/:postId`) in a new browser tab showing:
+   - The post content rendered as a styled email preview (white background, max-width 600px, Georgia/Arial font, inline CSS)
+   - A top toolbar with:
+     - **"Preview" / "HTML" toggle** to switch between the rendered view and raw HTML code
+     - **"Copy HTML" button** that copies the full inline-styled HTML to clipboard with a "Copied!" toast
 
-The prompt also includes the word-level and sentence-level quick checks (cut filler words, replace corporate speak, vary sentence length, front-load key info).
+3. **The HTML output** uses only inline CSS (no external stylesheets) so it pastes cleanly into any email builder. It formats the post hook as a bold H2 header and the body as styled paragraphs with proper line-height and spacing.
+
+## Files to Create / Edit
+
+### New Files
+- **`src/pages/admin/EmailPreview.tsx`** -- The full-page email preview component
+  - Fetches the post by ID from the database
+  - Generates email-compatible HTML with inline styles from the post's hook + body
+  - Renders preview mode (iframe or dangerouslySetInnerHTML in a contained div) and HTML mode (raw code in a `<pre>` block)
+  - "Copy HTML" button using `navigator.clipboard.writeText()`
+  - Toggle between Preview and HTML views using Tabs component
+
+### Edited Files
+- **`src/App.tsx`** -- Add route `/admin/email-preview/:postId` pointing to the new page
+- **`src/pages/admin/AllPosts.tsx`** -- Add an "Email Preview" button in the edit panel that opens the new route in a new tab via `window.open()`
 
 ## Technical Details
 
-### File Modified
+### Email HTML Template Structure
+- Inline CSS only (no `<style>` blocks for maximum email client compatibility)
+- `max-width: 600px`, centered, white background
+- Font: Georgia with Arial fallback
+- Line-height: 1.8
+- Hook rendered as bold H2 (~22px, dark gray, underlined)
+- Body text split by newlines into `<p>` tags (16px)
+- Horizontal rules between logical sections
+- All styling via `style=""` attributes on each element
 
-- `supabase/functions/polish-post/index.ts`
+### Route & Auth
+- The new page is wrapped in `AuthGuard` like other admin routes
+- Post data fetched via Supabase query using the `postId` URL param
 
-### Changes
+### Copy Functionality
+- Generates a complete standalone HTML string (with `<!DOCTYPE html>`, `<html>`, `<body>` wrapper)
+- Uses `navigator.clipboard.writeText()` to copy
+- Shows a sonner toast confirmation on success
 
-1. Switch model from `google/gemini-3-flash-preview` to `google/gemini-3-pro-preview`
-2. Replace the simple polish prompt with the full Seven Sweeps system prompt that includes:
-   - The framework overview and all 7 sweep descriptions
-   - Word-level replacements (utilize to use, leverage to use, etc.)
-   - Sentence-level rules (one idea per sentence, max 25 words, vary length)
-   - Brand context injection (tone, audience, words to avoid, writing examples) as before
-   - Instructions to preserve core message and facts, return polished text only
-3. No frontend changes needed -- the diff viewer already shows original vs polished
-
-### Prompt Structure
-
-The AI receives:
-- A system message with the full Seven Sweeps methodology and quick-pass checks
-- A user message with the brand profile context + the post body to edit
-
-This gives the model enough context to apply all seven passes internally and return a single polished result.
