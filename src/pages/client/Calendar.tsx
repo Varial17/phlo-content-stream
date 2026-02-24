@@ -343,6 +343,16 @@ export default function ClientCalendarPage() {
                 )}
               </div>
 
+              {selectedPost.channel === "email" && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full"
+                  onClick={() => window.open(`/admin/email-preview/${selectedPost.id}`, "_blank")}
+                >
+                  📧 View Email Preview
+                </Button>
+              )}
               <button className="text-xs text-primary hover:underline">View in Buffer →</button>
             </div>
           )}
