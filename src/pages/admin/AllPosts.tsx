@@ -86,6 +86,17 @@ export default function AdminAllPostsPage() {
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["admin-posts"] }); setSaved(true); setTimeout(() => setSaved(false), 2000); },
   });
 
+  const deleteMutation = useMutation({
+    mutationFn: async (postId: string) => {
+      await supabase.from("posts").delete().eq("id", postId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-posts"] });
+      setSelectedPostId(null);
+      toast.success("Post discarded");
+    },
+  });
+
   const pushMutation = useMutation({
     mutationFn: async (postId: string) => {
       const updateData: any = { status: "pending" };
@@ -278,7 +289,7 @@ export default function AdminAllPostsPage() {
                 <Button className={`flex-1 ${saved ? "bg-emerald-600" : "bg-blue-600 hover:bg-blue-700"} text-white`} onClick={() => saveMutation.mutate()} disabled={saveMutation.isPending}>
                   {saved ? <><Check className="h-4 w-4 mr-1" /> Saved</> : "Save Changes"}
                 </Button>
-                <Button variant="outline" className="border-slate-700 text-slate-300 hover:bg-slate-800" onClick={() => handleSelectPost(selectedPost)}>Discard</Button>
+                <Button variant="outline" className="border-red-500/50 text-red-400 hover:bg-red-500/10" onClick={() => { if (window.confirm("Delete this post permanently?")) deleteMutation.mutate(selectedPost.id); }} disabled={deleteMutation.isPending}>Discard Post</Button>
               </div>
 
               {selectedPost.status === "draft" && (
