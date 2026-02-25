@@ -38,7 +38,7 @@ serve(async (req) => {
       method: "POST",
       headers: { Authorization: `Bearer ${PERPLEXITY_API_KEY}`, "Content-Type": "application/json" },
       body: JSON.stringify({
-        model: "sonar",
+        model: "sonar-pro",
         messages: [{
           role: "user",
           content: `Find 10 recent news items, regulatory changes, or trending topics relevant to a ${profile.industry} firm in Australia targeting ${profile.target_audience}.
