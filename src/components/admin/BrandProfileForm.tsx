@@ -176,22 +176,36 @@ export function BrandProfileForm({ clientId, clientName, light = false }: BrandP
         <div className="flex flex-wrap items-center gap-3">
           {form.brand_colors.map((color, i) => (
             <div key={i} className="relative group">
-              <label className="block cursor-pointer">
+              <div className="flex flex-col items-center gap-1">
+                <label className="block cursor-pointer">
+                  <input
+                    type="color"
+                    value={color}
+                    onChange={(e) => {
+                      const updated = [...form.brand_colors];
+                      updated[i] = e.target.value;
+                      update("brand_colors", updated);
+                    }}
+                    className="sr-only"
+                  />
+                  <div
+                    className="h-10 w-10 rounded-lg border border-slate-600 shadow-sm transition-transform hover:scale-105"
+                    style={{ backgroundColor: color }}
+                  />
+                </label>
                 <input
-                  type="color"
+                  type="text"
                   value={color}
                   onChange={(e) => {
+                    const val = e.target.value;
                     const updated = [...form.brand_colors];
-                    updated[i] = e.target.value;
+                    updated[i] = val;
                     update("brand_colors", updated);
                   }}
-                  className="sr-only"
+                  className={`w-[72px] text-[10px] text-center uppercase px-1 py-0.5 rounded border ${light ? "bg-white border-slate-200 text-foreground" : "bg-transparent border-slate-700 text-slate-300"}`}
+                  placeholder="#000000"
                 />
-                <div
-                  className="h-10 w-10 rounded-lg border border-slate-600 shadow-sm transition-transform hover:scale-105"
-                  style={{ backgroundColor: color }}
-                />
-              </label>
+              </div>
               <button
                 onClick={() => {
                   const updated = form.brand_colors.filter((_, idx) => idx !== i);
@@ -201,10 +215,8 @@ export function BrandProfileForm({ clientId, clientName, light = false }: BrandP
               >
                 <X className="h-2.5 w-2.5 text-white" />
               </button>
-              <p className="text-[10px] text-center mt-1 uppercase" style={labelColor}>{color}</p>
             </div>
           ))}
-          {/* Always show empty slots up to at least 2, plus the add button */}
           {form.brand_colors.length < 8 && (
             <button
               onClick={() => update("brand_colors", [...form.brand_colors, "#3B82F6"])}
