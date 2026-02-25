@@ -12,6 +12,7 @@ import { AdminLayout } from "@/components/admin/AdminLayout";
 import ClientCalendarPage from "@/pages/client/Calendar";
 import ClientIdeationPage from "@/pages/client/Ideation";
 import ClientAnalyticsPage from "@/pages/client/Analytics";
+import ClientBrandProfilePage from "@/pages/client/BrandProfile";
 
 import AdminOverviewPage from "@/pages/admin/Overview";
 import AdminAllPostsPage from "@/pages/admin/AllPosts";
@@ -62,6 +63,7 @@ const App = () => (
             <Route path="/:clientSlug" element={<AuthGuard><ClientLayout><ClientCalendarPage /></ClientLayout></AuthGuard>} />
             <Route path="/:clientSlug/ideation" element={<AuthGuard><ClientLayout><ClientIdeationPage /></ClientLayout></AuthGuard>} />
             <Route path="/:clientSlug/analytics" element={<AuthGuard><ClientLayout><ClientAnalyticsPage /></ClientLayout></AuthGuard>} />
+            <Route path="/:clientSlug/brand" element={<AuthGuard><ClientLayout><ClientBrandProfilePage /></ClientLayout></AuthGuard>} />
             <Route path="/:clientSlug/email-preview/:postId" element={<AuthGuard><AdminEmailPreviewPage /></AuthGuard>} />
 
             <Route path="*" element={<NotFound />} />
