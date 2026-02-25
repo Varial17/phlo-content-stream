@@ -15,9 +15,10 @@ import { toast } from "sonner";
 interface BrandProfileFormProps {
   clientId: string;
   clientName: string;
+  light?: boolean;
 }
 
-export function BrandProfileForm({ clientId, clientName }: BrandProfileFormProps) {
+export function BrandProfileForm({ clientId, clientName, light = false }: BrandProfileFormProps) {
   const queryClient = useQueryClient();
   const [saved, setSaved] = useState(false);
   const [previewing, setPreviewing] = useState(false);
@@ -121,12 +122,17 @@ export function BrandProfileForm({ clientId, clientName }: BrandProfileFormProps
     }
   };
 
-  if (isLoading) return <div className="p-6 text-sm" style={{ color: "#64748B" }}>Loading brand profile…</div>;
+  if (isLoading) return <div className="p-6 text-sm text-muted-foreground">Loading brand profile…</div>;
 
   const sectionStyle = "rounded-lg p-4 space-y-4";
-  const sectionBg = { background: "#111827", border: "1px solid #1F2D45" };
+  const sectionBg = light
+    ? { background: "#F8FAFC", border: "1px solid #E2E8F0" }
+    : { background: "#111827", border: "1px solid #1F2D45" };
   const labelStyle = "text-xs font-medium" as const;
-  const labelColor = { color: "#94A3B8" };
+  const labelColor = light ? { color: "#64748B" } : { color: "#94A3B8" };
+  const inputClass = light
+    ? "bg-white border-slate-200 text-foreground"
+    : "bg-transparent border-slate-700 text-white";
 
   return (
     <div className="space-y-6">
@@ -136,20 +142,20 @@ export function BrandProfileForm({ clientId, clientName }: BrandProfileFormProps
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-1.5">
             <label className={labelStyle} style={labelColor}>Website URL</label>
-            <Input value={form.website_url} onChange={(e) => update("website_url", e.target.value)} className="bg-transparent border-slate-700 text-white" />
+            <Input value={form.website_url} onChange={(e) => update("website_url", e.target.value)} className={inputClass} />
           </div>
           <div className="space-y-1.5">
             <label className={labelStyle} style={labelColor}>Industry</label>
-            <Input value={form.industry} onChange={(e) => update("industry", e.target.value)} className="bg-transparent border-slate-700 text-white" />
+            <Input value={form.industry} onChange={(e) => update("industry", e.target.value)} className={inputClass} />
           </div>
         </div>
         <div className="space-y-1.5">
           <label className={labelStyle} style={labelColor}>Business Description</label>
-          <Textarea value={form.business_description} onChange={(e) => update("business_description", e.target.value)} className="bg-transparent border-slate-700 text-white min-h-[80px]" />
+          <Textarea value={form.business_description} onChange={(e) => update("business_description", e.target.value)} className={`${inputClass} min-h-[80px]`} />
         </div>
         <div className="space-y-1.5">
           <label className={labelStyle} style={labelColor}>Target Audience</label>
-          <Textarea value={form.target_audience} onChange={(e) => update("target_audience", e.target.value)} className="bg-transparent border-slate-700 text-white min-h-[60px]" />
+          <Textarea value={form.target_audience} onChange={(e) => update("target_audience", e.target.value)} className={`${inputClass} min-h-[60px]`} />
         </div>
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-1.5">
@@ -158,7 +164,7 @@ export function BrandProfileForm({ clientId, clientName }: BrandProfileFormProps
           </div>
           <div className="space-y-1.5">
             <label className={labelStyle} style={labelColor}>Location</label>
-            <Input value={form.location} onChange={(e) => update("location", e.target.value)} className="bg-transparent border-slate-700 text-white" />
+            <Input value={form.location} onChange={(e) => update("location", e.target.value)} className={inputClass} />
           </div>
         </div>
       </div>
@@ -215,15 +221,15 @@ export function BrandProfileForm({ clientId, clientName }: BrandProfileFormProps
         <h3 className="text-sm font-semibold mb-3">Voice & Tone</h3>
         <div className="space-y-1.5">
           <label className={labelStyle} style={labelColor}>Tone of Voice</label>
-          <Textarea value={form.tone_of_voice} onChange={(e) => update("tone_of_voice", e.target.value)} className="bg-transparent border-slate-700 text-white min-h-[60px]" placeholder="e.g. professional but approachable, never salesy" />
+          <Textarea value={form.tone_of_voice} onChange={(e) => update("tone_of_voice", e.target.value)} className={`${inputClass} min-h-[60px]`} placeholder="e.g. professional but approachable, never salesy" />
         </div>
         <div className="space-y-1.5">
           <label className={labelStyle} style={labelColor}>Writing Style Notes</label>
-          <Textarea value={form.writing_style_notes} onChange={(e) => update("writing_style_notes", e.target.value)} className="bg-transparent border-slate-700 text-white min-h-[60px]" />
+          <Textarea value={form.writing_style_notes} onChange={(e) => update("writing_style_notes", e.target.value)} className={`${inputClass} min-h-[60px]`} />
         </div>
         <div className="space-y-1.5">
           <label className={labelStyle} style={labelColor}>Writing Examples (paste 2-3 real posts)</label>
-          <Textarea value={form.writing_examples} onChange={(e) => update("writing_examples", e.target.value)} className="bg-transparent border-slate-700 text-white min-h-[120px]" />
+          <Textarea value={form.writing_examples} onChange={(e) => update("writing_examples", e.target.value)} className={`${inputClass} min-h-[120px]`} />
         </div>
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-1.5">
@@ -315,7 +321,7 @@ export function BrandProfileForm({ clientId, clientName }: BrandProfileFormProps
         >
           {saved ? <><Check className="h-4 w-4 mr-1" /> Saved</> : "Save Brand Profile"}
         </Button>
-        <Button variant="outline" className="border-slate-700 text-slate-300" onClick={handlePreview} disabled={previewing}>
+        <Button variant="outline" className={light ? "border-slate-200 text-slate-600" : "border-slate-700 text-slate-300"} onClick={handlePreview} disabled={previewing}>
           <Sparkles className="h-3.5 w-3.5 mr-1" /> Preview AI Voice
         </Button>
       </div>
@@ -323,10 +329,10 @@ export function BrandProfileForm({ clientId, clientName }: BrandProfileFormProps
       {previewing && <AILoadingState message={`Writing in ${clientName}'s voice…`} />}
 
       {previewText && (
-        <div className="rounded-lg p-4 space-y-2" style={{ background: "#111827", border: "1px solid rgba(59,130,246,0.3)" }}>
-          <p className="text-xs font-medium text-blue-400">✦ AI Voice Preview — LinkedIn</p>
-          <p className="text-sm whitespace-pre-wrap" style={{ color: "#F1F5F9" }}>{previewText}</p>
-          <Button size="sm" variant="outline" className="border-slate-700 text-slate-400" onClick={() => setPreviewText(null)}>
+        <div className="rounded-lg p-4 space-y-2" style={light ? { background: "#F0F9FF", border: "1px solid rgba(59,130,246,0.2)" } : { background: "#111827", border: "1px solid rgba(59,130,246,0.3)" }}>
+          <p className="text-xs font-medium text-blue-500">✦ AI Voice Preview — LinkedIn</p>
+          <p className={`text-sm whitespace-pre-wrap ${light ? "text-foreground" : ""}`} style={light ? {} : { color: "#F1F5F9" }}>{previewText}</p>
+          <Button size="sm" variant="outline" className={light ? "border-slate-200 text-slate-500" : "border-slate-700 text-slate-400"} onClick={() => setPreviewText(null)}>
             Close Preview
           </Button>
         </div>

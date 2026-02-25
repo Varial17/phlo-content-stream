@@ -1,5 +1,5 @@
 import { Link, useLocation, useParams } from "react-router-dom";
-import { Calendar, Lightbulb, BarChart3, Linkedin, Mail, Hash } from "lucide-react";
+import { Calendar, Lightbulb, BarChart3, Palette, Linkedin, Mail, Hash } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
@@ -26,6 +26,7 @@ export function ClientSidebar() {
     { title: "Calendar", path: `/${clientSlug}`, icon: Calendar },
     { title: "Ideation", path: `/${clientSlug}/ideation`, icon: Lightbulb },
     { title: "Analytics", path: `/${clientSlug}/analytics`, icon: BarChart3 },
+    { title: "Brand Profile", path: `/${clientSlug}/brand`, icon: Palette },
   ];
 
   const channelIcons: Record<string, any> = { linkedin: Linkedin, threads: Hash, email: Mail };
