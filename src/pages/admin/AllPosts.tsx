@@ -29,6 +29,7 @@ export default function AdminAllPostsPage() {
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
   const [editHook, setEditHook] = useState("");
   const [editBody, setEditBody] = useState("");
+  const [editHtmlBody, setEditHtmlBody] = useState("");
   const [editAssigned, setEditAssigned] = useState("");
   const [saved, setSaved] = useState(false);
   const [polishing, setPolishing] = useState(false);
@@ -72,6 +73,7 @@ export default function AdminAllPostsPage() {
     setSelectedPostId(post.id);
     setEditHook(post.hook);
     setEditBody(post.body ?? "");
+    setEditHtmlBody(post.html_body ?? "");
     setEditAssigned(post.assigned_to ?? "Unassigned");
     setSaved(false);
     setPolishedText(null);
@@ -79,7 +81,7 @@ export default function AdminAllPostsPage() {
 
   const saveMutation = useMutation({
     mutationFn: async () => {
-      await supabase.from("posts").update({ hook: editHook, body: editBody, assigned_to: editAssigned === "Unassigned" ? null : editAssigned }).eq("id", selectedPostId!);
+      await supabase.from("posts").update({ hook: editHook, body: editBody, html_body: editHtmlBody || null, assigned_to: editAssigned === "Unassigned" ? null : editAssigned }).eq("id", selectedPostId!);
     },
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["admin-posts"] }); setSaved(true); setTimeout(() => setSaved(false), 2000); },
   });
@@ -243,6 +245,14 @@ export default function AdminAllPostsPage() {
                   <span className="text-[10px]" style={{ color: "#64748B" }}>{editBody.length} chars</span>
                 </div>
                 <Textarea value={editBody} onChange={(e) => { setEditBody(e.target.value); setSaved(false); }} className="bg-transparent border-slate-700 text-white min-h-[200px]" />
+              </div>
+
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-medium" style={{ color: "#94A3B8" }}>Email HTML</label>
+                  <span className="text-[10px]" style={{ color: "#64748B" }}>{editHtmlBody.length} chars</span>
+                </div>
+                <Textarea value={editHtmlBody} onChange={(e) => { setEditHtmlBody(e.target.value); setSaved(false); }} className="bg-transparent border-slate-700 text-white min-h-[160px] font-mono text-xs" placeholder="Paste or edit raw HTML for email…" />
               </div>
 
               {polishing && <AILoadingState message={`Polishing in ${clientMap[selectedPost.client_id]?.name ?? "brand"}'s voice…`} />}

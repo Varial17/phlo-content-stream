@@ -60,6 +60,7 @@ export default function EmailPreviewPage() {
 
   const emailHtml = useMemo(() => {
     if (!post) return "";
+    if (post.html_body) return post.html_body;
     return generateEmailHtml(post.hook, post.body ?? "");
   }, [post]);
 

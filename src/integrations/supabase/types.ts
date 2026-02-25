@@ -250,6 +250,7 @@ export type Database = {
           created_at: string | null
           due_date: string | null
           hook: string
+          html_body: string | null
           id: string
           idea_id: string | null
           image_url: string | null
@@ -268,6 +269,7 @@ export type Database = {
           created_at?: string | null
           due_date?: string | null
           hook: string
+          html_body?: string | null
           id?: string
           idea_id?: string | null
           image_url?: string | null
@@ -286,6 +288,7 @@ export type Database = {
           created_at?: string | null
           due_date?: string | null
           hook?: string
+          html_body?: string | null
           id?: string
           idea_id?: string | null
           image_url?: string | null

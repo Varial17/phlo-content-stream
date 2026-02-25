@@ -1,0 +1,1 @@
+ALTER TABLE public.posts ADD COLUMN html_body text;
