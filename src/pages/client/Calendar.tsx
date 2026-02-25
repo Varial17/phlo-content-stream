@@ -348,7 +348,7 @@ export default function ClientCalendarPage() {
                   variant="outline"
                   size="sm"
                   className="w-full"
-                  onClick={() => window.open(`/admin/email-preview/${selectedPost.id}`, "_blank")}
+                  onClick={() => window.open(`/${clientSlug}/email-preview/${selectedPost.id}`, "_blank")}
                 >
                   📧 View Email Preview
                 </Button>

@@ -62,6 +62,7 @@ const App = () => (
             <Route path="/:clientSlug" element={<AuthGuard><ClientLayout><ClientCalendarPage /></ClientLayout></AuthGuard>} />
             <Route path="/:clientSlug/ideation" element={<AuthGuard><ClientLayout><ClientIdeationPage /></ClientLayout></AuthGuard>} />
             <Route path="/:clientSlug/analytics" element={<AuthGuard><ClientLayout><ClientAnalyticsPage /></ClientLayout></AuthGuard>} />
+            <Route path="/:clientSlug/email-preview/:postId" element={<AuthGuard><AdminEmailPreviewPage /></AuthGuard>} />
 
             <Route path="*" element={<NotFound />} />
           </Routes>
