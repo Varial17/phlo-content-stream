@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { StatusPill } from "@/components/shared/StatusPill";
 import { ChannelPill } from "@/components/shared/ChannelPill";
 import { LinkedInPreview } from "@/components/shared/LinkedInPreview";
-import { Textarea } from "@/components/ui/textarea";
+
 import {
   Sheet,
   SheetContent,
@@ -301,30 +301,61 @@ export default function ClientCalendarPage() {
               )}
 
               {showChangeRequest && (
-                <div className="space-y-2">
-                  <Textarea
-                    placeholder="Describe the changes you'd like…"
-                    value={changeRequest}
-                    onChange={(e) => setChangeRequest(e.target.value)}
-                    className="min-h-[80px]"
-                  />
+                <div className="space-y-3">
+                  <p className="text-xs font-semibold text-foreground">Notes for the team:</p>
+                  {changeRequest.split("\n").map((line, idx) => (
+                    <div key={idx} className="flex items-start gap-2">
+                      <span className="text-muted-foreground mt-2 text-xs">•</span>
+                      <input
+                        className="flex-1 border border-input bg-background rounded-md px-2 py-1.5 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                        placeholder="Add a note…"
+                        value={line}
+                        onChange={(e) => {
+                          const lines = changeRequest.split("\n");
+                          lines[idx] = e.target.value;
+                          setChangeRequest(lines.join("\n"));
+                        }}
+                      />
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-7 w-7 shrink-0 text-muted-foreground hover:text-destructive"
+                        onClick={() => {
+                          const lines = changeRequest.split("\n").filter((_, i) => i !== idx);
+                          setChangeRequest(lines.length ? lines.join("\n") : "");
+                        }}
+                      >
+                        ✕
+                      </Button>
+                    </div>
+                  ))}
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-xs text-primary"
+                    onClick={() => setChangeRequest(changeRequest ? changeRequest + "\n" : "")}
+                  >
+                    + Add bullet
+                  </Button>
                   <Button
                     size="sm"
-                    onClick={() =>
-                      changeRequestMutation.mutate({
-                        postId: selectedPost.id,
-                        text: changeRequest,
-                      })
-                    }
-                    disabled={!changeRequest.trim()}
+                    className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
+                    onClick={() => {
+                      const notes = changeRequest.split("\n").filter(l => l.trim()).map(l => `• ${l.trim()}`).join("\n");
+                      approveMutation.mutate(selectedPost.id);
+                      if (notes) {
+                        changeRequestMutation.mutate({ postId: selectedPost.id, text: notes });
+                      }
+                    }}
+                    disabled={!changeRequest.split("\n").some(l => l.trim())}
                   >
-                    Submit Feedback
+                    ✓ Approve with Notes
                   </Button>
                 </div>
               )}
 
               <div className="flex gap-2 pt-2">
-                {selectedPost.status === "pending" && (
+                {(selectedPost.status === "pending" || selectedPost.status === "draft") && (
                   <>
                     <Button
                       className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white"
@@ -335,9 +366,12 @@ export default function ClientCalendarPage() {
                     <Button
                       variant="outline"
                       className="flex-1"
-                      onClick={() => setShowChangeRequest(!showChangeRequest)}
+                      onClick={() => {
+                        setShowChangeRequest(!showChangeRequest);
+                        if (!changeRequest) setChangeRequest("");
+                      }}
                     >
-                      Request Changes
+                      Approve with Note
                     </Button>
                   </>
                 )}
