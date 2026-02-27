@@ -353,7 +353,7 @@ export default function ClientCalendarPage() {
                   📧 View Email Preview
                 </Button>
               )}
-              <button className="text-xs text-primary hover:underline">View in Buffer →</button>
+              
             </div>
           )}
         </SheetContent>
