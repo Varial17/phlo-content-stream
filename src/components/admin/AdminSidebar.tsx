@@ -40,7 +40,7 @@ export function AdminSidebar() {
               item.path === "/admin"
                 ? location.pathname === "/admin"
                 : item.path === "/admin/posts"
-                ? location.pathname === "/admin/posts"
+                ? location.pathname === "/admin/posts" || location.pathname === "/admin/posts/calendar"
                 : location.pathname.startsWith(item.path);
             return (
               <li key={item.path}>
