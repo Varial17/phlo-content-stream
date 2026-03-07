@@ -8,11 +8,11 @@ import { Switch } from "@/components/ui/switch";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { TagInput } from "@/components/shared/TagInput";
-import { Check, Sparkles, Plus, X, Trash2, ChevronDown, ChevronUp } from "lucide-react";
+import { Check, Sparkles, Plus, X, Trash2 } from "lucide-react";
 import { AILoadingState } from "@/components/shared/AILoadingState";
 import { toast } from "sonner";
 
-interface ICP {
+interface ICPRow {
   id?: string;
   client_id: string;
   name: string;
@@ -24,6 +24,18 @@ interface ICP {
   decision_makers: string;
   motivations: string;
 }
+
+const emptyICP = (clientId: string): ICPRow => ({
+  client_id: clientId,
+  name: "",
+  description: "",
+  pain_points: "",
+  content_goal: "",
+  content_pillars: [],
+  tone: "",
+  decision_makers: "",
+  motivations: "",
+});
 
 interface BrandProfileFormProps {
   clientId: string;
