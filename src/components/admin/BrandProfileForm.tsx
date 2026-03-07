@@ -147,7 +147,62 @@ export function BrandProfileForm({ clientId, clientName, light = false }: BrandP
     }
   };
 
-  if (isLoading) return <div className="p-6 text-sm text-muted-foreground">Loading brand profile…</div>;
+  // --- ICP state & queries ---
+  const { data: icps = [], isLoading: icpsLoading } = useQuery({
+    queryKey: ["icps", clientId],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("icps")
+        .select("*")
+        .eq("client_id", clientId)
+        .order("created_at");
+      return (data ?? []) as ICPRow[];
+    },
+  });
+
+  const [icpDrafts, setIcpDrafts] = useState<ICPRow[]>([]);
+  const [expandedIcp, setExpandedIcp] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (icps.length > 0) {
+      setIcpDrafts(icps);
+      if (expandedIcp === null) setExpandedIcp(0);
+    }
+  }, [icps]);
+
+  const updateIcp = (idx: number, key: keyof ICPRow, value: any) => {
+    setIcpDrafts((prev) => prev.map((icp, i) => (i === idx ? { ...icp, [key]: value } : icp)));
+    setSaved(false);
+  };
+
+  const saveIcpMutation = useMutation({
+    mutationFn: async () => {
+      // Delete removed ICPs
+      const existingIds = icps.filter((i) => i.id).map((i) => i.id!);
+      const draftIds = icpDrafts.filter((i) => i.id).map((i) => i.id!);
+      const toDelete = existingIds.filter((id) => !draftIds.includes(id));
+      if (toDelete.length) {
+        await supabase.from("icps").delete().in("id", toDelete);
+      }
+      // Upsert remaining
+      for (const icp of icpDrafts) {
+        if (!icp.name.trim()) continue;
+        if (icp.id) {
+          const { id, ...rest } = icp;
+          await supabase.from("icps").update(rest).eq("id", id);
+        } else {
+          await supabase.from("icps").insert(icp);
+        }
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["icps", clientId] });
+      toast.success("ICPs saved");
+    },
+    onError: (e) => toast.error("Failed to save ICPs: " + e.message),
+  });
+
+  if (isLoading || icpsLoading) return <div className="p-6 text-sm text-muted-foreground">Loading brand profile…</div>;
 
   const sectionStyle = "rounded-lg p-4 space-y-4";
   const sectionBg = light
