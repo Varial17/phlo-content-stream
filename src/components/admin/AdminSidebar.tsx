@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { LayoutDashboard, FileText, Users, CreditCard, CalendarDays } from "lucide-react";
+import { LayoutDashboard, FileText, Users, CreditCard } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
@@ -8,7 +8,6 @@ import { ClientAvatar } from "@/components/shared/ClientAvatar";
 const navItems = [
   { title: "Overview", path: "/admin", icon: LayoutDashboard },
   { title: "All Posts", path: "/admin/posts", icon: FileText },
-  { title: "Calendar", path: "/admin/posts/calendar", icon: CalendarDays },
   { title: "Clients", path: "/admin/clients", icon: Users },
   { title: "Billing", path: "/admin/billing", icon: CreditCard },
 ];
@@ -41,7 +40,7 @@ export function AdminSidebar() {
               item.path === "/admin"
                 ? location.pathname === "/admin"
                 : item.path === "/admin/posts"
-                ? location.pathname === "/admin/posts"
+                ? location.pathname === "/admin/posts" || location.pathname === "/admin/posts/calendar"
                 : location.pathname.startsWith(item.path);
             return (
               <li key={item.path}>
