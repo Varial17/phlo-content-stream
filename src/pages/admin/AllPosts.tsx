@@ -20,7 +20,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 import { NewPostDialog } from "@/components/shared/NewPostDialog";
 
-const staffOptions = ["Anh Nguyen", "James Pham", "Unassigned"];
+const staffOptions = ["Daniel", "Hannah", "Jack", "Unassigned"];
+const statusOptions = ["draft", "pending", "approved", "published"];
 
 export default function AdminAllPostsPage() {
   const navigate = useNavigate();
@@ -33,6 +34,7 @@ export default function AdminAllPostsPage() {
   const [editBody, setEditBody] = useState("");
   const [editHtmlBody, setEditHtmlBody] = useState("");
   const [editAssigned, setEditAssigned] = useState("");
+  const [editStatus, setEditStatus] = useState("draft");
   const [saved, setSaved] = useState(false);
   const [polishing, setPolishing] = useState(false);
   const [polishedText, setPolishedText] = useState<string | null>(null);
@@ -77,13 +79,14 @@ export default function AdminAllPostsPage() {
     setEditBody(post.body ?? "");
     setEditHtmlBody(post.html_body ?? "");
     setEditAssigned(post.assigned_to ?? "Unassigned");
+    setEditStatus(post.status ?? "draft");
     setSaved(false);
     setPolishedText(null);
   };
 
   const saveMutation = useMutation({
     mutationFn: async () => {
-      await supabase.from("posts").update({ hook: editHook, body: editBody, html_body: editHtmlBody || null, assigned_to: editAssigned === "Unassigned" ? null : editAssigned }).eq("id", selectedPostId!);
+      await supabase.from("posts").update({ hook: editHook, body: editBody, html_body: editHtmlBody || null, assigned_to: editAssigned === "Unassigned" ? null : editAssigned, status: editStatus }).eq("id", selectedPostId!);
     },
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["admin-posts"] }); setSaved(true); setTimeout(() => setSaved(false), 2000); },
   });
@@ -235,7 +238,23 @@ export default function AdminAllPostsPage() {
               <div className="flex items-center gap-2 text-xs" style={{ color: "#94A3B8" }}>
                 {clientMap[selectedPost.client_id] && <ClientAvatar initials={clientMap[selectedPost.client_id].initials} color={clientMap[selectedPost.client_id].color} size="sm" />}
                 <span>{clientMap[selectedPost.client_id]?.name}</span>
-                <StatusPill status={selectedPost.status} />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-medium" style={{ color: "#94A3B8" }}>Status</label>
+                  <Select value={editStatus} onValueChange={(v) => { setEditStatus(v); setSaved(false); }}>
+                    <SelectTrigger className="bg-transparent border-slate-700 text-white text-sm capitalize"><SelectValue /></SelectTrigger>
+                    <SelectContent>{statusOptions.map((s) => <SelectItem key={s} value={s} className="capitalize">{s}</SelectItem>)}</SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-medium" style={{ color: "#94A3B8" }}>Assigned To</label>
+                  <Select value={editAssigned} onValueChange={setEditAssigned}>
+                    <SelectTrigger className="bg-transparent border-slate-700 text-white text-sm"><SelectValue /></SelectTrigger>
+                    <SelectContent>{staffOptions.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
+                  </Select>
+                </div>
               </div>
 
               {selectedPost.client_change_request && (
@@ -245,13 +264,6 @@ export default function AdminAllPostsPage() {
                 </div>
               )}
 
-              <div className="space-y-1.5">
-                <label className="text-xs font-medium" style={{ color: "#94A3B8" }}>Assigned To</label>
-                <Select value={editAssigned} onValueChange={setEditAssigned}>
-                  <SelectTrigger className="bg-transparent border-slate-700 text-white text-sm"><SelectValue /></SelectTrigger>
-                  <SelectContent>{staffOptions.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
-                </Select>
-              </div>
 
               <PostImageSection
                 postId={selectedPost.id}
