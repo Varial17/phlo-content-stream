@@ -40,6 +40,8 @@ export function AdminSidebar() {
             const isActive =
               item.path === "/admin"
                 ? location.pathname === "/admin"
+                : item.path === "/admin/posts"
+                ? location.pathname === "/admin/posts"
                 : location.pathname.startsWith(item.path);
             return (
               <li key={item.path}>
