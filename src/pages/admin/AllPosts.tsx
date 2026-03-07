@@ -20,7 +20,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 import { NewPostDialog } from "@/components/shared/NewPostDialog";
 
-const staffOptions = ["Anh Nguyen", "James Pham", "Unassigned"];
+const staffOptions = ["Daniel", "Hannah", "Jack", "Unassigned"];
+const statusOptions = ["draft", "pending", "approved", "published"];
 
 export default function AdminAllPostsPage() {
   const navigate = useNavigate();

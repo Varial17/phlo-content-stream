@@ -32,7 +32,8 @@ import {
   isToday,
 } from "date-fns";
 
-const staffOptions = ["Anh Nguyen", "James Pham", "Unassigned"];
+const staffOptions = ["Daniel", "Hannah", "Jack", "Unassigned"];
+const statusOptions = ["draft", "pending", "approved", "published"];
 
 export default function AdminCalendarViewPage() {
   const navigate = useNavigate();
