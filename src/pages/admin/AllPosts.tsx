@@ -264,13 +264,6 @@ export default function AdminAllPostsPage() {
                 </div>
               )}
 
-              <div className="space-y-1.5">
-                <label className="text-xs font-medium" style={{ color: "#94A3B8" }}>Assigned To</label>
-                <Select value={editAssigned} onValueChange={setEditAssigned}>
-                  <SelectTrigger className="bg-transparent border-slate-700 text-white text-sm"><SelectValue /></SelectTrigger>
-                  <SelectContent>{staffOptions.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
-                </Select>
-              </div>
 
               <PostImageSection
                 postId={selectedPost.id}
