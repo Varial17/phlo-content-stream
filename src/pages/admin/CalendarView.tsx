@@ -376,7 +376,23 @@ export default function AdminCalendarViewPage() {
               <div className="flex items-center gap-2 text-xs" style={{ color: "#94A3B8" }}>
                 {clientMap[selectedPost.client_id] && <ClientAvatar initials={clientMap[selectedPost.client_id].initials} color={clientMap[selectedPost.client_id].color} size="sm" />}
                 <span>{clientMap[selectedPost.client_id]?.name}</span>
-                <StatusPill status={selectedPost.status} />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-medium" style={{ color: "#94A3B8" }}>Status</label>
+                  <Select value={editStatus} onValueChange={(v) => { setEditStatus(v); setSaved(false); }}>
+                    <SelectTrigger className="bg-transparent border-slate-700 text-white text-sm capitalize"><SelectValue /></SelectTrigger>
+                    <SelectContent>{statusOptions.map((s) => <SelectItem key={s} value={s} className="capitalize">{s}</SelectItem>)}</SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-medium" style={{ color: "#94A3B8" }}>Assigned To</label>
+                  <Select value={editAssigned} onValueChange={setEditAssigned}>
+                    <SelectTrigger className="bg-transparent border-slate-700 text-white text-sm"><SelectValue /></SelectTrigger>
+                    <SelectContent>{staffOptions.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
+                  </Select>
+                </div>
               </div>
 
               {selectedPost.client_change_request && (
@@ -385,14 +401,6 @@ export default function AdminCalendarViewPage() {
                   <p className="text-sm text-amber-200">{selectedPost.client_change_request}</p>
                 </div>
               )}
-
-              <div className="space-y-1.5">
-                <label className="text-xs font-medium" style={{ color: "#94A3B8" }}>Assigned To</label>
-                <Select value={editAssigned} onValueChange={setEditAssigned}>
-                  <SelectTrigger className="bg-transparent border-slate-700 text-white text-sm"><SelectValue /></SelectTrigger>
-                  <SelectContent>{staffOptions.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
-                </Select>
-              </div>
 
               <PostImageSection
                 postId={selectedPost.id}
