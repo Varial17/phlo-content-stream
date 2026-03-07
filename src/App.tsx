@@ -16,6 +16,7 @@ import ClientBrandProfilePage from "@/pages/client/BrandProfile";
 
 import AdminOverviewPage from "@/pages/admin/Overview";
 import AdminAllPostsPage from "@/pages/admin/AllPosts";
+import AdminCalendarViewPage from "@/pages/admin/CalendarView";
 import AdminClientsPage from "@/pages/admin/Clients";
 import AdminBillingPage from "@/pages/admin/Billing";
 import AdminEmailPreviewPage from "@/pages/admin/EmailPreview";
