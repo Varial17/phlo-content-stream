@@ -34,6 +34,7 @@ export default function AdminAllPostsPage() {
   const [editBody, setEditBody] = useState("");
   const [editHtmlBody, setEditHtmlBody] = useState("");
   const [editAssigned, setEditAssigned] = useState("");
+  const [editStatus, setEditStatus] = useState("draft");
   const [saved, setSaved] = useState(false);
   const [polishing, setPolishing] = useState(false);
   const [polishedText, setPolishedText] = useState<string | null>(null);
