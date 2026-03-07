@@ -8,6 +8,7 @@ import { ClientAvatar } from "@/components/shared/ClientAvatar";
 const navItems = [
   { title: "Overview", path: "/admin", icon: LayoutDashboard },
   { title: "All Posts", path: "/admin/posts", icon: FileText },
+  { title: "Calendar", path: "/admin/posts/calendar", icon: CalendarDays },
   { title: "Clients", path: "/admin/clients", icon: Users },
   { title: "Billing", path: "/admin/billing", icon: CreditCard },
 ];

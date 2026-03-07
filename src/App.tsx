@@ -56,6 +56,7 @@ const App = () => (
             {/* Admin routes */}
             <Route path="/admin" element={<AuthGuard><AdminLayout><AdminOverviewPage /></AdminLayout></AuthGuard>} />
             <Route path="/admin/posts" element={<AuthGuard><AdminLayout><AdminAllPostsPage /></AdminLayout></AuthGuard>} />
+            <Route path="/admin/posts/calendar" element={<AuthGuard><AdminLayout><AdminCalendarViewPage /></AdminLayout></AuthGuard>} />
             <Route path="/admin/clients" element={<AuthGuard><AdminLayout><AdminClientsPage /></AdminLayout></AuthGuard>} />
             <Route path="/admin/billing" element={<AuthGuard><AdminLayout><AdminBillingPage /></AdminLayout></AuthGuard>} />
             <Route path="/admin/email-preview/:postId" element={<AuthGuard><AdminEmailPreviewPage /></AuthGuard>} />
