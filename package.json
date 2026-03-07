@@ -13,7 +13,7 @@
     "test:watch": "vitest",
     "supabase:link": "npx supabase link --project-ref jcmazsrpdocstvrlosml",
     "supabase:push": "npx supabase db push",
-    "supabase:deploy-functions": "npx supabase functions deploy ideate && npx supabase functions deploy generate-post && npx supabase functions deploy polish-post && npx supabase functions deploy generate-image"
+    "supabase:deploy-functions": "npx supabase functions deploy ideate --no-verify-jwt && npx supabase functions deploy generate-post --no-verify-jwt && npx supabase functions deploy polish-post --no-verify-jwt && npx supabase functions deploy generate-image --no-verify-jwt"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

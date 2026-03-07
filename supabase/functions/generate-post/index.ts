@@ -104,14 +104,28 @@ Deno.serve(async (req) => {
     return new Response("ok", { headers: corsHeaders });
   }
 
-  const supabase = createClient(
-    Deno.env.get("SUPABASE_URL")!,
-    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
-  );
+  const supabaseUrl = Deno.env.get("SUPABASE_URL");
+  const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  const anthropicKey = Deno.env.get("ANTHROPIC_API_KEY");
 
-  const anthropic = new Anthropic({
-    apiKey: Deno.env.get("ANTHROPIC_API_KEY")!,
-  });
+  if (!anthropicKey) {
+    return new Response(
+      JSON.stringify({
+        error:
+          "ANTHROPIC_API_KEY is not set. Add it in Supabase Dashboard → Project Settings → Edge Functions → Secrets (name must be exactly ANTHROPIC_API_KEY).",
+      }),
+      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
+  }
+  if (!supabaseUrl || !serviceRoleKey) {
+    return new Response(
+      JSON.stringify({ error: "Supabase env (SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY) missing." }),
+      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
+  }
+
+  const supabase = createClient(supabaseUrl, serviceRoleKey);
+  const anthropic = new Anthropic({ apiKey: anthropicKey });
 
   let clientId: string | undefined;
   let functionStartTime = Date.now();
@@ -229,6 +243,7 @@ Return ONLY the post body text. No preamble, no metadata. Just the content itsel
     );
 
   } catch (error: any) {
+    console.error("[generate-post]", error?.message ?? error);
     // ── Log failure ───────────────────────────────────────────────────────
     await supabase.from("ai_logs").insert({
       client_id: clientId ?? null,
