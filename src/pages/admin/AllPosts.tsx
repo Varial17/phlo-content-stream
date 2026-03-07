@@ -1,7 +1,8 @@
 import { useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Plus, AlertTriangle, Sparkles, X, Check, CalendarIcon, Mail } from "lucide-react";
+import { Plus, AlertTriangle, Sparkles, X, Check, CalendarIcon, Mail, List, CalendarDays } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
