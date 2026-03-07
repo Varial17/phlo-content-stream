@@ -23,6 +23,7 @@ import { NewPostDialog } from "@/components/shared/NewPostDialog";
 const staffOptions = ["Anh Nguyen", "James Pham", "Unassigned"];
 
 export default function AdminAllPostsPage() {
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [clientFilter, setClientFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
