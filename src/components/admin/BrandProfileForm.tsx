@@ -8,9 +8,34 @@ import { Switch } from "@/components/ui/switch";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { TagInput } from "@/components/shared/TagInput";
-import { Check, Sparkles, Plus, X } from "lucide-react";
+import { Check, Sparkles, Plus, X, Trash2 } from "lucide-react";
 import { AILoadingState } from "@/components/shared/AILoadingState";
 import { toast } from "sonner";
+
+interface ICPRow {
+  id?: string;
+  client_id: string;
+  name: string;
+  description: string;
+  pain_points: string;
+  content_goal: string;
+  content_pillars: string[];
+  tone: string;
+  decision_makers: string;
+  motivations: string;
+}
+
+const emptyICP = (clientId: string): ICPRow => ({
+  client_id: clientId,
+  name: "",
+  description: "",
+  pain_points: "",
+  content_goal: "",
+  content_pillars: [],
+  tone: "",
+  decision_makers: "",
+  motivations: "",
+});
 
 interface BrandProfileFormProps {
   clientId: string;
@@ -122,7 +147,62 @@ export function BrandProfileForm({ clientId, clientName, light = false }: BrandP
     }
   };
 
-  if (isLoading) return <div className="p-6 text-sm text-muted-foreground">Loading brand profile…</div>;
+  // --- ICP state & queries ---
+  const { data: icps = [], isLoading: icpsLoading } = useQuery({
+    queryKey: ["icps", clientId],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("icps")
+        .select("*")
+        .eq("client_id", clientId)
+        .order("created_at");
+      return (data ?? []) as ICPRow[];
+    },
+  });
+
+  const [icpDrafts, setIcpDrafts] = useState<ICPRow[]>([]);
+  const [expandedIcp, setExpandedIcp] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (icps.length > 0) {
+      setIcpDrafts(icps);
+      if (expandedIcp === null) setExpandedIcp(0);
+    }
+  }, [icps]);
+
+  const updateIcp = (idx: number, key: keyof ICPRow, value: any) => {
+    setIcpDrafts((prev) => prev.map((icp, i) => (i === idx ? { ...icp, [key]: value } : icp)));
+    setSaved(false);
+  };
+
+  const saveIcpMutation = useMutation({
+    mutationFn: async () => {
+      // Delete removed ICPs
+      const existingIds = icps.filter((i) => i.id).map((i) => i.id!);
+      const draftIds = icpDrafts.filter((i) => i.id).map((i) => i.id!);
+      const toDelete = existingIds.filter((id) => !draftIds.includes(id));
+      if (toDelete.length) {
+        await supabase.from("icps").delete().in("id", toDelete);
+      }
+      // Upsert remaining
+      for (const icp of icpDrafts) {
+        if (!icp.name.trim()) continue;
+        if (icp.id) {
+          const { id, ...rest } = icp;
+          await supabase.from("icps").update(rest).eq("id", id);
+        } else {
+          await supabase.from("icps").insert(icp);
+        }
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["icps", clientId] });
+      toast.success("ICPs saved");
+    },
+    onError: (e) => toast.error("Failed to save ICPs: " + e.message),
+  });
+
+  if (isLoading || icpsLoading) return <div className="p-6 text-sm text-muted-foreground">Loading brand profile…</div>;
 
   const sectionStyle = "rounded-lg p-4 space-y-4";
   const sectionBg = light
@@ -272,6 +352,121 @@ export function BrandProfileForm({ clientId, clientName, light = false }: BrandP
             <TagInput value={form.competitors} onChange={(v) => update("competitors", v)} />
           </div>
         </div>
+      </div>
+
+      {/* Section: Ideal Customer Profiles (ICPs) */}
+      <div className={sectionStyle} style={sectionBg}>
+        <div className="flex items-center justify-between mb-3">
+          <div>
+            <h3 className="text-sm font-semibold">Ideal Customer Profiles</h3>
+            <p className="text-xs mt-0.5" style={labelColor}>Define your target audiences to guide AI content generation.</p>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            className={light ? "border-slate-200 text-slate-600" : "border-slate-700 text-slate-300"}
+            onClick={() => {
+              setIcpDrafts((prev) => [...prev, emptyICP(clientId)]);
+              setExpandedIcp(icpDrafts.length);
+            }}
+          >
+            <Plus className="h-3.5 w-3.5 mr-1" /> Add ICP
+          </Button>
+        </div>
+
+        {icpDrafts.length === 0 && (
+          <p className="text-xs text-center py-6" style={labelColor}>
+            No ICPs yet. Click "Add ICP" to define your first ideal customer profile.
+          </p>
+        )}
+
+        <div className="space-y-3">
+          {icpDrafts.map((icp, idx) => (
+            <div
+              key={icp.id ?? `new-${idx}`}
+              className="rounded-md border overflow-hidden"
+              style={light ? { borderColor: "#E2E8F0" } : { borderColor: "#1F2D45" }}
+            >
+              {/* ICP header - click to expand */}
+              <button
+                type="button"
+                className="w-full flex items-center justify-between px-4 py-2.5 text-left"
+                style={light ? { background: "#F1F5F9" } : { background: "#0F172A" }}
+                onClick={() => setExpandedIcp(expandedIcp === idx ? null : idx)}
+              >
+                <span className="text-sm font-medium">
+                  {icp.name || `ICP ${idx + 1}`}
+                </span>
+                <div className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    className="p-1 rounded hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIcpDrafts((prev) => prev.filter((_, i) => i !== idx));
+                      setSaved(false);
+                      if (expandedIcp === idx) setExpandedIcp(null);
+                    }}
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              </button>
+
+              {expandedIcp === idx && (
+                <div className="p-4 space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <label className={labelStyle} style={labelColor}>ICP Name</label>
+                      <Input value={icp.name} onChange={(e) => updateIcp(idx, "name", e.target.value)} className={inputClass} placeholder="e.g. Brokers" />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className={labelStyle} style={labelColor}>Decision Makers</label>
+                      <Input value={icp.decision_makers} onChange={(e) => updateIcp(idx, "decision_makers", e.target.value)} className={inputClass} placeholder="e.g. credit managers, BDMs" />
+                    </div>
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className={labelStyle} style={labelColor}>Who They Are</label>
+                    <Textarea value={icp.description} onChange={(e) => updateIcp(idx, "description", e.target.value)} className={`${inputClass} min-h-[60px]`} placeholder="Describe this audience segment…" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className={labelStyle} style={labelColor}>Core Pain Points</label>
+                    <Textarea value={icp.pain_points} onChange={(e) => updateIcp(idx, "pain_points", e.target.value)} className={`${inputClass} min-h-[60px]`} placeholder="What problems do they face?" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className={labelStyle} style={labelColor}>Content Goal</label>
+                    <Textarea value={icp.content_goal} onChange={(e) => updateIcp(idx, "content_goal", e.target.value)} className={`${inputClass} min-h-[40px]`} placeholder="What should content achieve for this audience?" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className={labelStyle} style={labelColor}>Motivations</label>
+                    <Input value={icp.motivations} onChange={(e) => updateIcp(idx, "motivations", e.target.value)} className={inputClass} placeholder="e.g. volume, quality, relationships" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className={labelStyle} style={labelColor}>Content Pillars</label>
+                    <TagInput value={icp.content_pillars} onChange={(v) => updateIcp(idx, "content_pillars", v)} placeholder="e.g. Market Intelligence" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className={labelStyle} style={labelColor}>Tone</label>
+                    <Input value={icp.tone} onChange={(e) => updateIcp(idx, "tone", e.target.value)} className={inputClass} placeholder="e.g. Peer-to-peer, direct, practical" />
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+
+        {icpDrafts.length > 0 && (
+          <div className="pt-2">
+            <Button
+              size="sm"
+              className="bg-blue-600 hover:bg-blue-700 text-white"
+              onClick={() => saveIcpMutation.mutate()}
+              disabled={saveIcpMutation.isPending}
+            >
+              {saveIcpMutation.isPending ? "Saving…" : "Save ICPs"}
+            </Button>
+          </div>
+        )}
       </div>
 
       {/* Section 4: AI Generation Settings */}

@@ -192,6 +192,56 @@ export type Database = {
         }
         Relationships: []
       }
+      icps: {
+        Row: {
+          client_id: string
+          content_goal: string | null
+          content_pillars: string[] | null
+          created_at: string | null
+          decision_makers: string | null
+          description: string | null
+          id: string
+          motivations: string | null
+          name: string
+          pain_points: string | null
+          tone: string | null
+        }
+        Insert: {
+          client_id: string
+          content_goal?: string | null
+          content_pillars?: string[] | null
+          created_at?: string | null
+          decision_makers?: string | null
+          description?: string | null
+          id?: string
+          motivations?: string | null
+          name?: string
+          pain_points?: string | null
+          tone?: string | null
+        }
+        Update: {
+          client_id?: string
+          content_goal?: string | null
+          content_pillars?: string[] | null
+          created_at?: string | null
+          decision_makers?: string | null
+          description?: string | null
+          id?: string
+          motivations?: string | null
+          name?: string
+          pain_points?: string | null
+          tone?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "icps_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ideas: {
         Row: {
           angle: string | null
