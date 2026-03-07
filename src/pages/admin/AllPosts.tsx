@@ -152,10 +152,22 @@ export default function AdminAllPostsPage() {
       <div className={`${selectedPostId ? "w-[calc(100%-440px)]" : "w-full"} flex flex-col border-r`} style={{ borderColor: "#1F2D45" }}>
         <div className="p-4 border-b" style={{ borderColor: "#1F2D45" }}>
           <div className="flex items-center justify-between mb-3">
-            <div>
+            <div className="flex items-center gap-2">
               <h1 className="text-xl font-bold">All Posts</h1>
+              <div className="flex items-center rounded-md border ml-3" style={{ borderColor: "#1F2D45" }}>
+                <button className="px-2.5 py-1.5 bg-blue-500/15 text-blue-400" title="List view">
+                  <List className="h-3.5 w-3.5" />
+                </button>
+                <button className="px-2.5 py-1.5 text-slate-500 hover:text-slate-300 transition-colors" title="Calendar view" onClick={() => navigate("/admin/posts/calendar")}>
+                  <CalendarDays className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
               <p className="text-xs" style={{ color: "#64748B" }}>Edit, assign, and push content to clients</p>
             </div>
+          </div>
+          <div className="flex items-center justify-end mb-3">
             <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white" onClick={() => setNewPostOpen(true)}>
               <Plus className="h-3.5 w-3.5 mr-1" /> New Post
             </Button>

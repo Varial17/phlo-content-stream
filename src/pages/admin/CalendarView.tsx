@@ -210,10 +210,19 @@ export default function AdminCalendarViewPage() {
       {/* Top bar */}
       <div className="p-4 border-b" style={{ borderColor: "#1F2D45" }}>
         <div className="flex items-center justify-between mb-3">
-          <div>
-            <h1 className="text-xl font-bold">Calendar View</h1>
-            <p className="text-xs" style={{ color: "#64748B" }}>Visualise and edit content on the calendar</p>
+          <div className="flex items-center gap-2">
+            <h1 className="text-xl font-bold">All Posts</h1>
+            <div className="flex items-center rounded-md border ml-3" style={{ borderColor: "#1F2D45" }}>
+              <button className="px-2.5 py-1.5 text-slate-500 hover:text-slate-300 transition-colors" title="List view" onClick={() => navigate("/admin/posts")}>
+                <List className="h-3.5 w-3.5" />
+              </button>
+              <button className="px-2.5 py-1.5 bg-blue-500/15 text-blue-400" title="Calendar view">
+                <CalendarDays className="h-3.5 w-3.5" />
+              </button>
+            </div>
           </div>
+          <div>
+            <p className="text-xs" style={{ color: "#64748B" }}>Visualise and edit content on the calendar</p>
           <div className="flex items-center gap-3">
             <Select value={selectedClientId} onValueChange={setSelectedClientId}>
               <SelectTrigger className="w-[180px] bg-transparent border-slate-700 text-slate-300 text-xs">
