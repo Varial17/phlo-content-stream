@@ -86,7 +86,7 @@ export default function AdminAllPostsPage() {
 
   const saveMutation = useMutation({
     mutationFn: async () => {
-      await supabase.from("posts").update({ hook: editHook, body: editBody, html_body: editHtmlBody || null, assigned_to: editAssigned === "Unassigned" ? null : editAssigned }).eq("id", selectedPostId!);
+      await supabase.from("posts").update({ hook: editHook, body: editBody, html_body: editHtmlBody || null, assigned_to: editAssigned === "Unassigned" ? null : editAssigned, status: editStatus }).eq("id", selectedPostId!);
     },
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["admin-posts"] }); setSaved(true); setTimeout(() => setSaved(false), 2000); },
   });
