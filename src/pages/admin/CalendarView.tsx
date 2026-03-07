@@ -137,6 +137,7 @@ export default function AdminCalendarViewPage() {
     setEditBody(post.body ?? "");
     setEditHtmlBody(post.html_body ?? "");
     setEditAssigned(post.assigned_to ?? "Unassigned");
+    setEditStatus(post.status ?? "draft");
     setSaved(false);
     setPolishedText(null);
     setDrawerOpen(true);
