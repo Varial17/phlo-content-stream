@@ -8,9 +8,22 @@ import { Switch } from "@/components/ui/switch";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { TagInput } from "@/components/shared/TagInput";
-import { Check, Sparkles, Plus, X } from "lucide-react";
+import { Check, Sparkles, Plus, X, Trash2, ChevronDown, ChevronUp } from "lucide-react";
 import { AILoadingState } from "@/components/shared/AILoadingState";
 import { toast } from "sonner";
+
+interface ICP {
+  id?: string;
+  client_id: string;
+  name: string;
+  description: string;
+  pain_points: string;
+  content_goal: string;
+  content_pillars: string[];
+  tone: string;
+  decision_makers: string;
+  motivations: string;
+}
 
 interface BrandProfileFormProps {
   clientId: string;
