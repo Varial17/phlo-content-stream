@@ -223,6 +223,7 @@ export default function AdminCalendarViewPage() {
           </div>
           <div>
             <p className="text-xs" style={{ color: "#64748B" }}>Visualise and edit content on the calendar</p>
+          </div>
           <div className="flex items-center gap-3">
             <Select value={selectedClientId} onValueChange={setSelectedClientId}>
               <SelectTrigger className="w-[180px] bg-transparent border-slate-700 text-slate-300 text-xs">
