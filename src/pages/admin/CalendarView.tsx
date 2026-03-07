@@ -35,6 +35,7 @@ import {
 const staffOptions = ["Anh Nguyen", "James Pham", "Unassigned"];
 
 export default function AdminCalendarViewPage() {
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [selectedClientId, setSelectedClientId] = useState<string>("all");
   const [currentDate, setCurrentDate] = useState(new Date());
