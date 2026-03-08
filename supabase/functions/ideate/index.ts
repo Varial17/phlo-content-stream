@@ -33,7 +33,7 @@ async function fetchResearch(perplexityKey: string, prompt: string) {
   };
 }
 
-async function structureIdeas(anthropicKey, rawResearch, citations, clientContext) {
+async function structureIdeas(anthropicKey: string, rawResearch: string, citations: string[], clientContext: { name: string; industry: string; location: string; icpNames: string }) {
   const citationBlock = citations.length > 0 ? "\nSource URLs:\n" + citations.join("\n") : "";
 
   const res = await fetch("https://api.anthropic.com/v1/messages", {
