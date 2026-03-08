@@ -174,7 +174,7 @@ Deno.serve(async (req) => {
     if (supabase) {
       await supabase.from("ai_logs").insert({
         client_id: clientId || null, function_name: "ideate", success: false, error_message: msg,
-      }).catch(() => {});
+      }).then(() => {}).catch(() => {});
     }
     return new Response(JSON.stringify({ error: msg }), {
       status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
