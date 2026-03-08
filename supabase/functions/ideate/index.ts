@@ -81,15 +81,19 @@ async function structureIdeas(anthropicKey: string, rawResearch: string, citatio
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
+  const perplexityKey = Deno.env.get("PERPLEXITY_API_KEY");
+  const anthropicKey = Deno.env.get("ANTHROPIC_API_KEY");
+  if (!perplexityKey) {
+    return new Response(JSON.stringify({ error: "PERPLEXITY_API_KEY not set. Add it in Supabase Dashboard → Edge Functions → Secrets." }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+  }
+  if (!anthropicKey) {
+    return new Response(JSON.stringify({ error: "ANTHROPIC_API_KEY not set. Add it in Supabase Dashboard → Edge Functions → Secrets." }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+  }
+
   let supabase: any;
   let clientId: string | undefined;
 
   try {
-    const perplexityKey = Deno.env.get("PERPLEXITY_API_KEY");
-    if (!perplexityKey) throw new Error("PERPLEXITY_API_KEY not configured");
-    const anthropicKey = Deno.env.get("ANTHROPIC_API_KEY");
-    if (!anthropicKey) throw new Error("ANTHROPIC_API_KEY not configured");
-
     supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
 
     const body = await req.json();
@@ -137,17 +141,13 @@ Deno.serve(async (req) => {
     }
     if (!Array.isArray(ideas) || ideas.length === 0) throw new Error("No ideas returned");
 
+    // Map to columns that exist on public.ideas (no target_icp, treatment, why_this_post, research_findings, key_facts)
     const rows = ideas.map((idea) => ({
       client_id: clientId,
       hook: String(idea.hook || "Untitled idea").slice(0, 280),
       angle: String(idea.angle || "Insight"),
       channel: Array.isArray(idea.channel) ? idea.channel : ["linkedin"],
-      target_icp: idea.target_icp ? String(idea.target_icp) : null,
       relevance: Math.min(10, Math.max(1, Number(idea.relevance) || 5)),
-      treatment: idea.treatment ? String(idea.treatment) : null,
-      why_this_post: idea.why_this_post ? String(idea.why_this_post) : null,
-      research_findings: idea.research_findings ? String(idea.research_findings) : null,
-      key_facts: Array.isArray(idea.key_facts) ? idea.key_facts.map(String) : [],
       source_url: idea.source_url ? String(idea.source_url) : null,
       source_summary: idea.source_summary ? String(idea.source_summary) : null,
       status: "new",
