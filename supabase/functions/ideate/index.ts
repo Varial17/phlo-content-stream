@@ -72,7 +72,7 @@ async function structureIdeas(anthropicKey: string, rawResearch: string, citatio
   }
   const data = await res.json();
   return {
-    content: (data.content || []).filter((b) => b.type === "text").map((b) => b.text || "").join(""),
+    content: (data.content || []).filter((b: any) => b.type === "text").map((b: any) => b.text || "").join(""),
     inputTokens: data.usage?.input_tokens ?? 0,
     outputTokens: data.usage?.output_tokens ?? 0,
   };
