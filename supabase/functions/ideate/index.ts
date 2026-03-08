@@ -81,8 +81,8 @@ async function structureIdeas(anthropicKey: string, rawResearch: string, citatio
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
-  let supabase;
-  let clientId;
+  let supabase: any;
+  let clientId: string | undefined;
 
   try {
     const perplexityKey = Deno.env.get("PERPLEXITY_API_KEY");
