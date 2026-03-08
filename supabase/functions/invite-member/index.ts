@@ -24,7 +24,7 @@ Deno.serve(async (req) => {
     if (!caller) throw new Error("Unauthorized");
 
     const body = await req.json();
-    const { email, client_id } = body;
+    const { email, client_id, role: requestedRole } = body;
     if (!email) throw new Error("email is required");
     if (!client_id) throw new Error("client_id is required");
 
@@ -43,18 +43,25 @@ Deno.serve(async (req) => {
       .eq("user_id", caller.id);
 
     const callerRole = callerRoles?.[0]?.role;
-    const isOwner = callerRole === "client" || callerRole === "business_owner" || callerRole === "admin";
+    const isAdmin = callerRole === "admin";
+    const isOwner = isAdmin || callerRole === "client" || callerRole === "business_owner";
 
     if (!isOwner) throw new Error("Only owners can invite members");
-    if (callerRole !== "admin" && callerProfile?.client_id !== client_id) {
+    if (!isAdmin && callerProfile?.client_id !== client_id) {
       throw new Error("You can only invite members to your own organisation");
     }
+    // Only admins can invite business_owners
+    if (requestedRole === "business_owner" && !isAdmin) {
+      throw new Error("Only Phlo admins can assign the Owner role");
+    }
+
+    const inviteRole = requestedRole === "business_owner" ? "business_owner" : "member";
 
     // Send the invite via Supabase Auth admin API
     const { data, error } = await adminClient.auth.admin.inviteUserByEmail(email, {
       data: {
         client_id,
-        role: "member",
+        role: inviteRole,
       },
     });
 
