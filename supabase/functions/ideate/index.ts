@@ -10,7 +10,7 @@ const RESEARCH_MODEL = "sonar";              // Perplexity: fast live web search
 const STRUCTURE_MODEL = "claude-haiku-4-5-20251001"; // Fast JSON structuring — swap to claude-sonnet-4-6 for richer output // Claude: hooks, framing, editorial structure
 // ─────────────────────────────────────────────────────────────────────────────
 
-async function fetchResearch(perplexityKey, prompt) {
+async function fetchResearch(perplexityKey: string, prompt: string) {
   const res = await fetch("https://api.perplexity.ai/chat/completions", {
     method: "POST",
     headers: { "Authorization": "Bearer " + perplexityKey, "Content-Type": "application/json" },
