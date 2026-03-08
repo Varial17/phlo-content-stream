@@ -198,7 +198,7 @@ export default function ClientIdeationPage() {
         .select("*")
         .eq("client_id", clientSlug!)
         .order("relevance", { ascending: false });
-      return (data ?? []) as Idea[];
+      return (data ?? []) as unknown as Idea[];
     },
     enabled: !!clientSlug,
   });

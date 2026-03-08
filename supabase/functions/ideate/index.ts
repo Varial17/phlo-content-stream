@@ -10,7 +10,7 @@ const RESEARCH_MODEL = "sonar";              // Perplexity: fast live web search
 const STRUCTURE_MODEL = "claude-haiku-4-5-20251001"; // Fast JSON structuring — swap to claude-sonnet-4-6 for richer output // Claude: hooks, framing, editorial structure
 // ─────────────────────────────────────────────────────────────────────────────
 
-async function fetchResearch(perplexityKey, prompt) {
+async function fetchResearch(perplexityKey: string, prompt: string) {
   const res = await fetch("https://api.perplexity.ai/chat/completions", {
     method: "POST",
     headers: { "Authorization": "Bearer " + perplexityKey, "Content-Type": "application/json" },
@@ -33,7 +33,7 @@ async function fetchResearch(perplexityKey, prompt) {
   };
 }
 
-async function structureIdeas(anthropicKey, rawResearch, citations, clientContext) {
+async function structureIdeas(anthropicKey: string, rawResearch: string, citations: string[], clientContext: { name: string; industry: string; location: string; icpNames: string }) {
   const citationBlock = citations.length > 0 ? "\nSource URLs:\n" + citations.join("\n") : "";
 
   const res = await fetch("https://api.anthropic.com/v1/messages", {
@@ -72,7 +72,7 @@ async function structureIdeas(anthropicKey, rawResearch, citations, clientContex
   }
   const data = await res.json();
   return {
-    content: (data.content || []).filter((b) => b.type === "text").map((b) => b.text || "").join(""),
+    content: (data.content || []).filter((b: any) => b.type === "text").map((b: any) => b.text || "").join(""),
     inputTokens: data.usage?.input_tokens ?? 0,
     outputTokens: data.usage?.output_tokens ?? 0,
   };
@@ -81,8 +81,8 @@ async function structureIdeas(anthropicKey, rawResearch, citations, clientContex
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
-  let supabase;
-  let clientId;
+  let supabase: any;
+  let clientId: string | undefined;
 
   try {
     const perplexityKey = Deno.env.get("PERPLEXITY_API_KEY");
@@ -90,7 +90,7 @@ Deno.serve(async (req) => {
     const anthropicKey = Deno.env.get("ANTHROPIC_API_KEY");
     if (!anthropicKey) throw new Error("ANTHROPIC_API_KEY not configured");
 
-    supabase = createClient(Deno.env.get("SUPABASE_URL"), Deno.env.get("SUPABASE_SERVICE_ROLE_KEY"));
+    supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
 
     const body = await req.json();
     clientId = body.client_id;
@@ -174,7 +174,7 @@ Deno.serve(async (req) => {
     if (supabase) {
       await supabase.from("ai_logs").insert({
         client_id: clientId || null, function_name: "ideate", success: false, error_message: msg,
-      }).catch(() => {});
+      }).then(() => {}).catch(() => {});
     }
     return new Response(JSON.stringify({ error: msg }), {
       status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },

@@ -250,7 +250,7 @@ Return ONLY the post body text. No preamble, no metadata. Just the content itsel
       function_name: "generate-post",
       success: false,
       error_message: error.message,
-    }).catch(() => {}); // don't throw if logging fails
+    }).then(() => {}).catch(() => {}); // don't throw if logging fails
 
     return new Response(
       JSON.stringify({ error: error.message }),
