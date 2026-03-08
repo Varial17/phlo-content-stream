@@ -1,5 +1,5 @@
 import { Link, useLocation, useParams } from "react-router-dom";
-import { Calendar, Lightbulb, BarChart3, Palette, Linkedin, Mail, Hash } from "lucide-react";
+import { Calendar, Lightbulb, BarChart3, Palette, Settings, Linkedin, Mail, Hash } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
@@ -28,6 +28,8 @@ export function ClientSidebar() {
     { title: "Analytics", path: `/${clientSlug}/analytics`, icon: BarChart3 },
     { title: "Brand Profile", path: `/${clientSlug}/brand`, icon: Palette },
   ];
+
+  const settingsPath = `/${clientSlug}/settings`;
 
   const channelIcons: Record<string, any> = { linkedin: Linkedin, threads: Hash, email: Mail };
   const channels = (client?.channels as string[] | null) ?? [];
@@ -84,6 +86,20 @@ export function ClientSidebar() {
           </div>
         </div>
       </nav>
+
+      <div className="px-3 pb-2">
+        <Link
+          to={settingsPath}
+          className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors ${
+            location.pathname.startsWith(settingsPath)
+              ? "bg-white/10 text-white border-l-2 border-blue-500"
+              : "text-slate-400 hover:bg-white/5 hover:text-white"
+          }`}
+        >
+          <Settings className="h-4 w-4" />
+          <span>Settings</span>
+        </Link>
+      </div>
 
       <div className="px-4 py-4" style={{ borderTop: "1px solid #1E293B" }}>
         <div className="flex items-center gap-3">

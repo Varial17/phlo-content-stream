@@ -13,6 +13,7 @@ import ClientCalendarPage from "@/pages/client/Calendar";
 import ClientIdeationPage from "@/pages/client/Ideation";
 import ClientAnalyticsPage from "@/pages/client/Analytics";
 import ClientBrandProfilePage from "@/pages/client/BrandProfile";
+import ClientSettingsPage from "@/pages/client/Settings";
 
 import AdminOverviewPage from "@/pages/admin/Overview";
 import AdminAllPostsPage from "@/pages/admin/AllPosts";
@@ -36,8 +37,8 @@ function RootRedirect() {
   const { role, clientId, loading } = useAuth();
   if (loading) return null;
   if (role === "admin" || role === "staff") return <Navigate to="/admin" replace />;
-  if (role === "client" && clientId) return <Navigate to={`/${clientId}`} replace />;
-  // Default to admin for now (no role assigned yet)
+  if ((role === "client" || role === "business_owner" || role === "member") && clientId)
+    return <Navigate to={`/${clientId}`} replace />;
   return <Navigate to="/admin" replace />;
 }
 
@@ -66,6 +67,7 @@ const App = () => (
             <Route path="/:clientSlug/ideation" element={<AuthGuard><ClientLayout><ClientIdeationPage /></ClientLayout></AuthGuard>} />
             <Route path="/:clientSlug/analytics" element={<AuthGuard><ClientLayout><ClientAnalyticsPage /></ClientLayout></AuthGuard>} />
             <Route path="/:clientSlug/brand" element={<AuthGuard><ClientLayout><ClientBrandProfilePage /></ClientLayout></AuthGuard>} />
+            <Route path="/:clientSlug/settings" element={<AuthGuard><ClientLayout><ClientSettingsPage /></ClientLayout></AuthGuard>} />
             <Route path="/:clientSlug/email-preview/:postId" element={<AuthGuard><AdminEmailPreviewPage /></AuthGuard>} />
 
             <Route path="*" element={<NotFound />} />

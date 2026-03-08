@@ -2,13 +2,14 @@ import { createContext, useContext, useEffect, useState, ReactNode } from "react
 import { supabase } from "@/integrations/supabase/client";
 import type { User, Session } from "@supabase/supabase-js";
 
-type AppRole = "admin" | "staff" | "client";
+type AppRole = "admin" | "staff" | "client" | "business_owner" | "member";
 
 interface AuthContextType {
   user: User | null;
   session: Session | null;
   role: AppRole | null;
   clientId: string | null;
+  isOwner: boolean; // true for client + business_owner (can see billing)
   loading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
@@ -22,6 +23,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [role, setRole] = useState<AppRole | null>(null);
   const [clientId, setClientId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+
+  const isOwner = role === "client" || role === "business_owner";
 
   const fetchUserMeta = async (userId: string) => {
     // Fetch role
@@ -88,7 +91,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, role, clientId, loading, signIn, signOut }}>
+    <AuthContext.Provider value={{ user, session, role, clientId, isOwner, loading, signIn, signOut }}>
       {children}
     </AuthContext.Provider>
   );
